@@ -1,0 +1,41 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+# qt files
+*.pro.user*
+.qmake.cache
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Visual Studio Crap
+*.vcproj
+*.vcxproj
+*.sln
+*.user
+*.filters
+
+# Executables
+*.exe
+*.out
+# image files
+*.psd
+
+*.app
+# temp files under linux
+*.~*
+#bzr files
+.bzr/
+#zips and tgz
+*.tgz
+*.zip
+*.tar.gz

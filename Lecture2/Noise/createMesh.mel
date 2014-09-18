@@ -1,0 +1,15 @@
+
+proc createMesh()
+{
+	int $nV[]=`polyEvaluate -v pPlane1`;
+
+	for($i=0; $i<$nV[0]; $i++)
+	{
+		float $a[]=`pointPosition pPlane1.vtx[$i]`;
+		setAttr noiseNode1.tx $a[0];
+		setAttr noiseNode1.tz $a[2];
+		$o=`getAttr noiseNode1.output`;
+
+		xform -a -ws -t $a[0] $o $a[2] pPlane1.vtx[$i];
+	}
+}

@@ -1,0 +1,177 @@
+
+
+global proc int RibExportScript ( string $parent,
+                                   string $action,
+                                   string $initialSettings,
+                                   string $resultCallback
+                                   )
+//
+//	Description:
+//		This script posts the file translator options.
+//		The optionsString is of the form:
+//			varName1=value1;varName2=value2;...
+//
+//	Parameters:
+//		$parent - the elf parent layout for this options layout. It is
+//					always a scrollLayout.
+//		$action - the action that is to be performed with this invokation
+//					of this proc. Valid options are:
+//						"query" - construct the options string and pass it
+//									to the resultCallback.
+//						"post" - post all the elf controls.
+//		$initialSettings - the current options string in effect at the
+//						   time this script is invoked.
+//		$resultCallback -
+//				This is the proc to be called with the result string.
+//				resultCallback ( string $optionsString )
+//
+//	Returns:
+//		1 if successfull.
+//		0 otherwise.
+//
+
+{
+  int 	$result;
+  string 	$currentOptions;
+  string 	$optionList[];
+  string 	$optionBreakDown[];
+
+
+  if ($action == "post")
+  {
+  setParent $parent;
+      // options are "-normals=1;-uvs=1;-geo=1;-lights=1";
+      columnLayout -adj true objTypeCol;
+        radioButtonGrp
+          -l "normals"
+          -nrb 2 -cw3 175 75 75
+          -sl 1
+          -la2 "On" "Off" rglNormals
+      ;
+      radioButtonGrp
+        -l "uvs"
+        -nrb 2 -cw3 175 75 75
+        -sl 1
+        -la2 "On" "Off" rglUVs
+      ;
+      radioButtonGrp
+        -l "geo"
+        -nrb 2 -cw3 175 75 75
+        -sl 1
+        -la2 "On" "Off" rglGeo
+      ;
+      radioButtonGrp
+        -l "lights"
+        -nrb 2 -cw3 175 75 75
+        -sl 1
+        -la2 "On" "Off" rglLights
+      ;
+    //	Now to set the current settings.
+    //
+    $currentOptions = $initialSettings;
+    if (size($currentOptions) > 0)
+    {
+      tokenize($currentOptions, ";", $optionList);
+      for ($index = 0; $index < size($optionList); $index++)
+      {
+      if ($optionBreakDown[0] == "-normals")
+             {
+               if ($optionBreakDown[1] == "0")
+               {
+                 radioButtonGrp -e -sl 2 rglNormals;
+               }
+               else
+               {
+                 radioButtonGrp -e -sl 1 rglNormals;
+               }
+             }
+             if ($optionBreakDown[0] == "-uvs")
+             {
+               if ($optionBreakDown[1] == "0")
+               {
+                 radioButtonGrp -e -sl 2 rglUVs;
+               }
+               else
+               {
+                 radioButtonGrp -e -sl 1 rglUVs;
+               }
+             }
+             if ($optionBreakDown[0] == "-geo")
+             {
+               if ($optionBreakDown[1] == "0")
+               {
+                 radioButtonGrp -e -sl 2 rglGeo;
+               }
+               else
+               {
+                 radioButtonGrp -e -sl 1 rglGeo;
+               }
+             }
+             if ($optionBreakDown[0] == "-lights")
+             {
+               if ($optionBreakDown[1] == "0")
+               {
+                 radioButtonGrp -e -sl 2 rglLights;
+               }
+               else
+               {
+                 radioButtonGrp -e -sl 1 rglLights;
+               }
+             }
+      }
+    }
+
+
+    $result = 1;
+  }
+  else if ($action == "query")
+  {
+  if (`radioButtonGrp -q -sl rglNormals` == 1)
+  {
+    $currentOptions = $currentOptions + "-normals=1;";
+  }
+  else
+  {
+    $currentOptions = $currentOptions + "-normals=0;";
+  }
+  if (`radioButtonGrp -q -sl rglUVs` == 1)
+  {
+    $currentOptions = $currentOptions + "-uvs=1;";
+  }
+  else
+  {
+    $currentOptions = $currentOptions + "-uvs=0;";
+  }
+  if (`radioButtonGrp -q -sl rglGeo` == 1)
+  {
+    $currentOptions = $currentOptions + "-geo=1;";
+  }
+  else
+  {
+    $currentOptions = $currentOptions + "-geo=0;";
+  }
+  if (`radioButtonGrp -q -sl rglLights` == 1)
+  {
+    $currentOptions = $currentOptions + "-lights=1;";
+  }
+  else
+  {
+    $currentOptions = $currentOptions + "-lights=0;";
+  }
+    eval($resultCallback+" \""+$currentOptions+"\"");
+    print $resultCallback;
+    print "\n";
+    print $currentOptions;
+    $result = 1;
+  }
+  else
+  {
+    $result = 0;
+  }
+
+  return $result;
+}
+
+
+
+

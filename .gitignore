@@ -5,6 +5,7 @@
 *.obj
 # qt files
 *.pro.user*
+*.bundle
 .qmake.cache
 # Compiled Dynamic libraries
 *.so

@@ -10,15 +10,15 @@ QT       -= core gui
 ####################################################################################
 # This is the name of the plugin / final lib file
 ####################################################################################
-TARGET = HelloMaya
+TARGET = JoyPad
 ####################################################################################
 # for for mac we need a bundle so change the name
 ####################################################################################
-macx:TARGET=HelloMaya.bundle
+macx:TARGET=JoyPad.bundle
 ####################################################################################
 # here we add the source files (and headers if required)
 ####################################################################################
-SOURCES+=HelloMaya.cpp
+SOURCES+=gameInputDevice.cpp
 # these are defines required by Maya to re-define some C++
 # stuff, we will add some more later to tell what platform
 # we are on as well
@@ -30,13 +30,24 @@ DEFINES+=REQUIRE_IOSTREAM \
 # this list as required and they will be added to the build
 ####################################################################################
 MAYALIBS=-lOpenMaya \
-         -lFoundation
+         -lFoundation\
+        -lOpenMayaUI \
+-lDataModel \
+-lCommandEngine \
+-lFoundation \
+-lIMFbase \
+-lm -ldl
+# this demo uses SDL so add the paths using the sdl2-config tool
+QMAKE_CXXFLAGS+=$$system(sdl2-config  --cflags)
+message(output from sdl2-config --cflags added to CXXFLAGS= $$QMAKE_CXXFLAGS)
+
+LIBS+= $$system(sdl2-config  --libs)
+#message(output from sdl2-config --static-libs added to LIB=$$LIBS)
+
 ####################################################################################
 # these are all the libs usually included by mayald in case you need
 # them just add them to the list above and make sure you escape
 ####################################################################################
-#-lOpenMayalib \
-#-lOpenMaya \
 #-lAnimSlice \
 #-lDeformSlice \
 #-lModifiers \

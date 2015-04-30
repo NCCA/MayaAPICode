@@ -1,5 +1,7 @@
-loadPlugin gameInputDevice;
 string $node = `createNode JoyPadNode`;
 string $cube[] = `polyCube`;
-connectAttr ( $node + ".outputTranslate" ) ( $cube[0] + ".translate" );
+connectAttr ( $node + ".lhlr" ) ( $cube[0] + ".tx" );
+connectAttr ( $node + ".lhud" ) ( $cube[0] + ".tz" );
+connectAttr ( $node + ".rhud" ) ( $cube[0] + ".ty" );
+
 setAttr ( $node + ".live" ) 1;

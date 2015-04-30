@@ -1,5 +1,5 @@
 #include "JoyPadNode.h"
-
+#include <maya/MFnDependencyNode.h>
 enum XBOXAxis
 {
   LEFTSTICKLR, //0
@@ -31,15 +31,46 @@ enum XBOXButtons
   XBOXDPARRIGHT //14
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+/// @brief simple macro to check status and return if error
+/// originally written by Sola Aina
+//----------------------------------------------------------------------------------------------------------------------
+#define CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( stat , message )				\
+	if( !status )										\
+	{											\
+		MString errorString = status.errorString() + " -- " + MString( message );	\
+		MGlobal::displayError( errorString );						\
+		return MStatus::kFailure;							\
+	}											\
+//----------------------------------------------------------------------------------------------------------------------
+/// @brief simple macro to check status and return if error
+/// originally written by Sola Aina
+//----------------------------------------------------------------------------------------------------------------------
+
+#define CHECK_STATUS_AND_RETURN_IF_FAIL( stat , message )					\
+	if( !status )										\
+	{											\
+		MString errorString = status.errorString() + " -- " + MString( message );	\
+		MGlobal::displayError( errorString );						\
+	}											\
+
 
 
 
 MTypeId JoyPadNode::m_id( 0x00081053 );
-MObject JoyPadNode::m_outputTranslate;
-MObject JoyPadNode::m_outputTranslateX;
-MObject JoyPadNode::m_outputTranslateY;
-MObject JoyPadNode::m_outputTranslateZ;
-MObject JoyPadNode::m_updateTranslateXZ;
+MObject JoyPadNode::m_output;
+MObject JoyPadNode::m_leftHatLR;
+MObject JoyPadNode::m_leftHatUD;
+
+MObject JoyPadNode::m_rightHatLR;
+MObject JoyPadNode::m_rightHatUD;
+
+
+
+MObject JoyPadNode::m_sensitivity;
+
+
+
 SDL_Joystick *JoyPadNode::m_js;
 SDL_Joystick *getJoystick(int _index);
 
@@ -63,11 +94,11 @@ JoyPadNode::~JoyPadNode()
 void JoyPadNode::postConstructor()
 {
 	MObjectArray attrArray;
-	attrArray.append( JoyPadNode::m_outputTranslate );
+	attrArray.append(JoyPadNode::m_output);
+
 	setRefreshOutputAttributes( attrArray );
 
-	// we'll be reading one set of translate x,y, z's at a time
-	createMemoryPools( 24, 3, sizeof(double));
+	createMemoryPools( 24, DATABLOCKSIZE, sizeof(double));
 }
 
 
@@ -76,6 +107,14 @@ void JoyPadNode::threadHandler()
 {
   MStatus status;
   char msg[100];
+  int sensitivity;
+  MFnDependencyNode dependencyFn( thisMObject() , &status );
+  CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable to initialize dependency node" );
+  MPlug sizePlug = dependencyFn.findPlug( m_sensitivity , true , &status );
+  CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get sensitivity plug" );
+  // now grab the value and place in our variable
+  status = sizePlug.getValue( sensitivity );
+  CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get value from sensitivity plug" );
 
   while ( ! isDone() )
   {
@@ -85,12 +124,14 @@ void JoyPadNode::threadHandler()
     MCharBuffer buffer;
     status = acquireDataStorage(buffer);
     if ( ! status )
-            continue;
+         continue;
 
     beginThreadLoop();
     {
-      float changeX = 0.0, changeY = 0.0, changeZ =0.0;
-
+      float lhatUD=0.0;
+      float rhatUD=0.0;
+      float lhatLR=0.0;
+      float rhatLR=0.0;
       if(m_js != 0)
        {
         SDL_Event event;
@@ -116,9 +157,6 @@ void JoyPadNode::threadHandler()
 
         }
 
-
-
-
 //        if(SDL_JoystickGetButton(js,XBOXBUTTONBACK) )
 //       {
 //         MGlobal::displayError("Done");
@@ -127,46 +165,51 @@ void JoyPadNode::threadHandler()
 
         // process the joystick axis 0 is the left stick l->r
         // axis 1 is the left stick u->d defined in the header
-        short int x=0;
-        x=SDL_JoystickGetAxis(m_js, LEFTSTICKLR);
-        short int y=0;
-        y=SDL_JoystickGetAxis(m_js, LEFTSTICKUD);
+        short int lx=0;
+        lx=SDL_JoystickGetAxis(m_js, LEFTSTICKLR);
+        short int ly=0;
+        ly=SDL_JoystickGetAxis(m_js, LEFTSTICKUD);
 
+        short int rx=0;
+        rx=SDL_JoystickGetAxis(m_js, RIGHTSTICKLR);
+        short int ry=0;
+        ry=SDL_JoystickGetAxis(m_js, RIGHTSTICKUD);
 
         // filter against a tolerance to get rid of any noise
-        if ( ( x <= -SENS ) || (x >= SENS ) )
+        if ( ( lx <= -sensitivity ) || (lx >= sensitivity ) )
         {
-          changeX=UPDATE*x/float(JOYMAX);
-          sprintf(msg,"Change X  %f",changeX);
-          MGlobal::displayInfo(msg);
+          lhatLR=UPDATE*lx/float(JOYMAX);
+        }
+        else lhatLR=0.0;
+
+        if ( ( rx <= -sensitivity ) || (rx >= sensitivity ) )
+        {
+          rhatLR=UPDATE*rx/float(JOYMAX);
+        }
+        else rhatLR=0.0;
+
+        if ( ( ly <= -sensitivity ) || (ly >= sensitivity ) )
+        {
+          lhatUD=-UPDATE*ly/float(JOYMAX);
 
         }
-        else changeX=0.0;
+        else lhatUD=0.0;
 
-        if ( ( y <= -SENS ) || (y >= SENS ) )
+        if ( ( ry <= -sensitivity ) || (ry >= sensitivity ) )
         {
-          changeY=-UPDATE*y/float(JOYMAX);
-          sprintf(msg,"Change Y  %f",changeY);
-          MGlobal::displayInfo(msg);
+          rhatUD=-UPDATE*ry/float(JOYMAX);
 
         }
-        else changeY=0.0;
-        // now check the right stick for the in / out
-        // this is index 4 defined in the header
-        short int z=-SDL_JoystickGetAxis(m_js, RIGHTSTICKUD);
-        if ( ( z <= -SENS ) || (z >= SENS ) )
-        {
-          changeZ=UPDATE*z/float(JOYMAX);
-        }
-        else changeZ=0.0;
+        else rhatUD=0.0;
 
       }
-
-
       double* doubleData = reinterpret_cast<double*>(buffer.ptr());
-      doubleData[0] = changeX ; doubleData[1] = changeY; doubleData[2] = changeZ;
-
-    pushThreadData( buffer );
+      doubleData[DBLOCKLEFTHATLR]=lhatLR;
+      doubleData[DBLOCKLEFTHATUD]=lhatUD;
+      doubleData[DBLOCKRIGHTHATLR]=rhatLR;
+      doubleData[DBLOCKRIGHTHATUD]=rhatUD;
+      doubleData[DBLOCKUPDATEHACK]=rand(); //hack!
+      pushThreadData( buffer );
     }
     endThreadLoop();
 
@@ -198,40 +241,85 @@ MStatus JoyPadNode::initialize()
 
 
 
-    //
-//			int numJoyPads=SDL_NumJoysticks();
-//			std::cout<<"Found "<<numJoyPads<<" Joypads\n";
-//			if(numJoyPads ==0)
-//			{
-//				std::cerr<<"This demo needs a Joypad falling back to key control\n";
-//			}
-//		//	m_js= getJoystick(0);
-
 	MStatus status;
-	MFnNumericAttribute numAttr;
 
-	m_outputTranslateX = numAttr.create("outputTranslateX", "otx", MFnNumericData::kDouble, 0.0, &status);
-	MCHECKERROR(status, "create outputTranslateX");
-	m_outputTranslateY = numAttr.create("outputTranslateY", "oty", MFnNumericData::kDouble, 0.0, &status);
-	MCHECKERROR(status, "create outputTranslateY");
-	m_outputTranslateZ = numAttr.create("outputTranslateZ", "otz", MFnNumericData::kDouble, 0.0, &status);
-	MCHECKERROR(status, "create outputTranslateZ");
-	m_outputTranslate = numAttr.create("outputTranslate", "ot", m_outputTranslateX, m_outputTranslateY,
-									 m_outputTranslateZ, &status);
-	MCHECKERROR(status, "create outputTranslate");
+	MFnNumericAttribute	numAttr;
 
-	m_updateTranslateXZ = numAttr.create( "updateTranslateXZ", "uxz", MFnNumericData::kBoolean);
-	CHECK_MSTATUS( numAttr.setKeyable(true) );
-	CHECK_MSTATUS( numAttr.setStorable(true) );
-	CHECK_MSTATUS( numAttr.setHidden(false) );
-	CHECK_MSTATUS( numAttr.setDefault(true) );
+  m_sensitivity = numAttr.create( "sensitivity", "sens", MFnNumericData::kInt, 3200, &status );
+  numAttr.setMin(150);
+  numAttr.setSoftMin(200);
+  numAttr.setSoftMax(32000);
+  numAttr.setMax(33000);
 
-	ADD_ATTRIBUTE(m_outputTranslate);
-	ADD_ATTRIBUTE(m_updateTranslateXZ);
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"sensitivity\" attribute" );
+  // add attribute
+  status = addAttribute( m_sensitivity );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"sensitivity\" attribute to Node" );
 
-	ATTRIBUTE_AFFECTS( live, m_outputTranslate);
-	ATTRIBUTE_AFFECTS( frameRate, m_outputTranslate);
-	ATTRIBUTE_AFFECTS( m_updateTranslateXZ, m_outputTranslate);
+
+
+
+
+  m_leftHatLR = numAttr.create( "leftHatLR", "lhlr", MFnNumericData::kDouble, 0.0, &status );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"leftHatLR\" attribute" );
+  // add attribute
+  status = addAttribute( m_leftHatLR );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"leftHatLR\" attribute to Node" );
+
+  m_leftHatUD = numAttr.create( "leftHatUD", "lhud", MFnNumericData::kDouble, 0.0, &status );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"leftHatUD\" attribute" );
+  // add attribute
+  status = addAttribute( m_leftHatUD );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"leftHatUD\" attribute to Node" );
+
+
+  m_rightHatLR = numAttr.create( "rightHatLR", "rhlr", MFnNumericData::kDouble, 0.0, &status );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"rightHatLR\" attribute" );
+  // add attribute
+  status = addAttribute( m_rightHatLR );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"rightHatLR\" attribute to Node" );
+
+  m_rightHatUD = numAttr.create( "rightHatUD", "rhud", MFnNumericData::kDouble, 0.0, &status );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"rightHatUD\" attribute" );
+  // add attribute
+  status = addAttribute( m_rightHatUD );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"rightHatUD\" attribute to Node" );
+
+  m_output = numAttr.create( "dummyOut", "dout", MFnNumericData::kDouble, 0.0, &status );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"output\" attribute" );
+  // add attribute
+  numAttr.setKeyable(true);
+  numAttr.setStorable(true);
+  numAttr.setHidden(false);
+  numAttr.setDefault(true);
+
+  status = addAttribute( m_output );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"output\" attribute to Node" );
+
+
+	attributeAffects( live, m_leftHatLR);
+	attributeAffects( live, m_leftHatUD);
+	attributeAffects( live, m_rightHatLR);
+	attributeAffects( live, m_rightHatUD);
+	attributeAffects( live, m_output);
+
+	attributeAffects( m_output, m_leftHatLR);
+	attributeAffects( m_output, m_leftHatUD);
+	attributeAffects( m_output, m_rightHatLR);
+	attributeAffects( m_output, m_rightHatUD);
+
+	attributeAffects( frameRate, m_leftHatLR);
+	attributeAffects( frameRate, m_leftHatUD);
+	attributeAffects( frameRate, m_rightHatLR);
+	attributeAffects( frameRate, m_rightHatUD);
+	attributeAffects( frameRate, m_output);
+
+	attributeAffects( m_sensitivity, m_leftHatLR);
+	attributeAffects( m_sensitivity, m_leftHatUD);
+	attributeAffects( m_sensitivity, m_rightHatLR);
+	attributeAffects( m_sensitivity, m_rightHatUD);
+
+
 
 	return MS::kSuccess;
 }
@@ -239,49 +327,54 @@ MStatus JoyPadNode::initialize()
 MStatus JoyPadNode::compute( const MPlug& plug, MDataBlock& block )
 {
 	MStatus status;
-	if( plug == m_outputTranslate || plug == m_outputTranslateX ||
-		plug == m_outputTranslateY || plug == m_outputTranslateZ )
+
+
+	if( plug==m_output || plug== m_leftHatLR || plug == m_leftHatUD ||
+			plug==m_rightHatLR || plug == m_rightHatUD)
 	{
-		// Find the type of translation we will be doing
-		bool xzUpdate  = block.inputValue( m_updateTranslateXZ ).asBool();
 
 		// Access the data and update the output attribute
 		MCharBuffer buffer;
 		if ( popThreadData(buffer) )
 		{
 			// Relative data coming in
-			double* doubleData = reinterpret_cast<double*>(buffer.ptr());
+		double* doubleData = reinterpret_cast<double*>(buffer.ptr());
 
-			MDataHandle outputTranslateHandle = block.outputValue( m_outputTranslate, &status );
-			MCHECKERROR(status, "Error in block.outputValue for outputTranslate");
+		MDataHandle hndleftLR=block.outputValue( m_leftHatLR, &status );
+		CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL(status, "Error in block.outputValue for m_leftHatLR");
+		double &outleftLR=hndleftLR.asDouble();
+		outleftLR+=doubleData[DBLOCKLEFTHATLR];
 
-			double3& outputTranslate = outputTranslateHandle.asDouble3();
-			if ( xzUpdate ) 
-			{
-				// XZ
-				outputTranslate[0] += doubleData[0];
-				outputTranslate[1] += doubleData[2];
-				outputTranslate[2] -= doubleData[1];
-			}
-			else
-			{
-				// XY
-				outputTranslate[0] += doubleData[0];
-				outputTranslate[1] += doubleData[1];
-				outputTranslate[2] += doubleData[2];
-			}
-			block.setClean( plug );
+		MDataHandle hndleftUD=block.outputValue( m_leftHatUD, &status );
+		CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL(status, "Error in block.outputValue for m_leftHatLR");
+		double &outleftUD=hndleftUD.asDouble();
+		outleftUD+=doubleData[DBLOCKLEFTHATUD];
+
+		MDataHandle hndrightLR=block.outputValue( m_rightHatLR, &status );
+		CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL(status, "Error in block.outputValue for m_leftHatLR");
+		double &outrightLR=hndrightLR.asDouble();
+		outrightLR+=doubleData[DBLOCKRIGHTHATLR];
+
+		MDataHandle hndrightUD=block.outputValue( m_rightHatUD, &status );
+		CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL(status, "Error in block.outputValue for m_leftHatLR");
+		double &outrightUD=hndrightUD.asDouble();
+		outrightUD+=doubleData[DBLOCKRIGHTHATUD];
+
+
+		}
+		block.setClean( plug );
 
 			releaseDataStorage(buffer);
 			return ( MS::kSuccess );
+
 		}
 		else
 		{
 			return MS::kFailure;
 		}
-	}
 
-	return ( MS::kUnknownParameter );
+	return MS::kUnknownParameter;
+
 }
 
 

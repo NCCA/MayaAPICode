@@ -3,7 +3,6 @@
 
 #include <maya/MTypeId.h>
 
-#include <api_macros.h>
 #include <maya/MIOStream.h>
 
 #include <maya/MPlug.h>
@@ -17,6 +16,16 @@ class JoyPadNode : public MPxThreadedDeviceNode
 {
 
 public:
+
+	enum DataBlockValues{DBLOCKLEFTHATLR,
+											 DBLOCKLEFTHATUD,
+											 DBLOCKRIGHTHATLR,
+											 DBLOCKRIGHTHATUD,
+											 DBLOCKUPDATEHACK, // leave this last used for updates
+											 DATABLOCKSIZE //this must be last
+											};
+
+
 						JoyPadNode();
 	virtual 			~JoyPadNode();
 
@@ -30,14 +39,24 @@ public:
 
 public:
 
-	static MObject		m_outputTranslate;
-	static MObject 		m_outputTranslateX;
-	static MObject		m_outputTranslateY;
-	static MObject 		m_outputTranslateZ;
+//	static MObject		m_outputTranslate;
+//	static MObject 		m_outputTranslateX;
+//	static MObject		m_outputTranslateY;
+//	static MObject 		m_outputTranslateZ;
+	static MObject m_output;
+	static MObject		m_leftHatLR;
+	static MObject		m_leftHatUD;
+
+	static MObject		m_rightHatLR;
+	static MObject		m_rightHatUD;
+
+	static MObject		m_sensitivity;
+
+
 	// Boolean attribute for deciding if we are going
 	// to update XZ or XY. Only two inputs from the
 	// gameInput in this example
-	static MObject		m_updateTranslateXZ;
+//	static MObject		m_updateTranslateXZ;
 
 	static MTypeId		m_id;
 	static SDL_Joystick *m_js;

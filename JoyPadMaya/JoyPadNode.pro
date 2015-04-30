@@ -18,7 +18,13 @@ macx:TARGET=JoyPad.bundle
 ####################################################################################
 # here we add the source files (and headers if required)
 ####################################################################################
-SOURCES+=gameInputDevice.cpp
+SOURCES+=src/JoyPadNode.cpp \
+         src/Plugin.cpp
+
+HEADERS+=include/JoyPadNode.h
+
+OTHER_FILES+=test.mel
+INCLUDEPATH+=include
 # these are defines required by Maya to re-define some C++
 # stuff, we will add some more later to tell what platform
 # we are on as well

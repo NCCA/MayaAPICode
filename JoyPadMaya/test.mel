@@ -3,5 +3,7 @@ string $cube[] = `polyCube`;
 connectAttr ( $node + ".lhlr" ) ( $cube[0] + ".tx" );
 connectAttr ( $node + ".lhud" ) ( $cube[0] + ".tz" );
 connectAttr ( $node + ".rhud" ) ( $cube[0] + ".ty" );
+connectAttr ( $node + ".rtrig" ) ( $cube[0] + ".rx" );
+connectAttr ( $node + ".ltrig" ) ( $cube[0] + ".rz" );
 
 setAttr ( $node + ".live" ) 1;

@@ -21,6 +21,8 @@ public:
 											 DBLOCKLEFTHATUD,
 											 DBLOCKRIGHTHATLR,
 											 DBLOCKRIGHTHATUD,
+											 DBLOCKLEFTTRIGGER,
+											 DBLOCKRIGHTTRIGGER,
 											 DBLOCKUPDATEHACK, // leave this last used for updates
 											 DATABLOCKSIZE //this must be last
 											};
@@ -39,20 +41,16 @@ public:
 
 public:
 
-//	static MObject		m_outputTranslate;
-//	static MObject 		m_outputTranslateX;
-//	static MObject		m_outputTranslateY;
-//	static MObject 		m_outputTranslateZ;
-	static MObject m_output;
-	static MObject		m_leftHatLR;
-	static MObject		m_leftHatUD;
+	static MObject	m_output;
+	static MObject	m_leftHatLR;
+	static MObject	m_leftHatUD;
+	static MObject	m_rightHatLR;
+	static MObject	m_rightHatUD;
+	static MObject	m_sensitivity;
+	static MObject	m_rightTrigger;
+	static MObject	m_leftTrigger;
 
-	static MObject		m_rightHatLR;
-	static MObject		m_rightHatUD;
-
-	static MObject		m_sensitivity;
-
-
+	static MObjectArray m_buttons;
 	// Boolean attribute for deciding if we are going
 	// to update XZ or XY. Only two inputs from the
 	// gameInput in this example

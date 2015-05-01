@@ -61,10 +61,11 @@ MTypeId JoyPadNode::m_id( 0x00081053 );
 MObject JoyPadNode::m_output;
 MObject JoyPadNode::m_leftHatLR;
 MObject JoyPadNode::m_leftHatUD;
-
 MObject JoyPadNode::m_rightHatLR;
 MObject JoyPadNode::m_rightHatUD;
-
+MObject JoyPadNode::m_leftTrigger;
+MObject JoyPadNode::m_rightTrigger;
+MObjectArray JoyPadNode::m_buttons;
 
 
 MObject JoyPadNode::m_sensitivity;
@@ -79,7 +80,6 @@ const static float UPDATE=0.5;
 /// @brief the max joystick analogue value
 const static int JOYMAX=32767;
 /// @brief a sensitivity thereshold for the js.
-const static int SENS=3200;
 
 
 
@@ -106,15 +106,9 @@ void JoyPadNode::postConstructor()
 void JoyPadNode::threadHandler()
 {
   MStatus status;
-  char msg[100];
   int sensitivity;
   MFnDependencyNode dependencyFn( thisMObject() , &status );
   CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable to initialize dependency node" );
-  MPlug sizePlug = dependencyFn.findPlug( m_sensitivity , true , &status );
-  CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get sensitivity plug" );
-  // now grab the value and place in our variable
-  status = sizePlug.getValue( sensitivity );
-  CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get value from sensitivity plug" );
 
   while ( ! isDone() )
   {
@@ -128,40 +122,24 @@ void JoyPadNode::threadHandler()
 
     beginThreadLoop();
     {
+
+      MPlug sensitivityPlug = dependencyFn.findPlug( m_sensitivity , true , &status );
+      CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get sensitivity plug" );
+      // now grab the value and place in our variable
+      status = sensitivityPlug.getValue( sensitivity );
+      CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get value from sensitivity plug" );
+
       float lhatUD=0.0;
       float rhatUD=0.0;
       float lhatLR=0.0;
       float rhatLR=0.0;
       if(m_js != 0)
        {
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
+       SDL_Event event;
+       // we need to pump the event queue before reading JS values
+       while (SDL_PollEvent(&event))
         {
-        switch (event.type)
-        {
-
-        case SDL_JOYBUTTONDOWN:
-            sprintf(msg,"Joystick %d button %d down\n",
-                   event.jbutton.which, event.jbutton.button);
-           // MGlobal::displayInfo(msg);
-
-            break;
-        case SDL_JOYBUTTONUP:
-            sprintf(msg,"Joystick %d button %d up\n",
-                   event.jbutton.which, event.jbutton.button);
-            //MGlobal::displayInfo(msg);
-
-            break;
-          }
-
-
         }
-
-//        if(SDL_JoystickGetButton(js,XBOXBUTTONBACK) )
-//       {
-//         MGlobal::displayError("Done");
-//         setDone(true);
-//       }
 
         // process the joystick axis 0 is the left stick l->r
         // axis 1 is the left stick u->d defined in the header
@@ -203,11 +181,24 @@ void JoyPadNode::threadHandler()
         else rhatUD=0.0;
 
       }
+
+      // make this go from 0 -> JOYMAX as the data is actually from
+      // -32768 - 0 - 32766 (short)
+      short int leftTrigger=SDL_JoystickGetAxis(m_js,LEFTTRIGGER)+JOYMAX+1;
+
+      short int rightTrigger=SDL_JoystickGetAxis(m_js,RIGHTTRIGGER)+JOYMAX+1;
+
+
+
+
       double* doubleData = reinterpret_cast<double*>(buffer.ptr());
       doubleData[DBLOCKLEFTHATLR]=lhatLR;
       doubleData[DBLOCKLEFTHATUD]=lhatUD;
       doubleData[DBLOCKRIGHTHATLR]=rhatLR;
       doubleData[DBLOCKRIGHTHATUD]=rhatUD;
+      doubleData[DBLOCKLEFTTRIGGER]=leftTrigger;
+      doubleData[DBLOCKRIGHTTRIGGER]=rightTrigger;
+
       doubleData[DBLOCKUPDATEHACK]=rand(); //hack!
       pushThreadData( buffer );
     }
@@ -256,10 +247,6 @@ MStatus JoyPadNode::initialize()
   status = addAttribute( m_sensitivity );
   CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"sensitivity\" attribute to Node" );
 
-
-
-
-
   m_leftHatLR = numAttr.create( "leftHatLR", "lhlr", MFnNumericData::kDouble, 0.0, &status );
   CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"leftHatLR\" attribute" );
   // add attribute
@@ -285,12 +272,38 @@ MStatus JoyPadNode::initialize()
   status = addAttribute( m_rightHatUD );
   CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"rightHatUD\" attribute to Node" );
 
+  m_leftTrigger = numAttr.create( "leftTriger", "ltrig", MFnNumericData::kDouble, 0.0, &status );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"leftTrigger\" attribute" );
+  // add attribute
+  status = addAttribute( m_leftTrigger );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"leftTrigger\" attribute to Node" );
+
+  m_rightTrigger = numAttr.create( "rightTriger", "rtrig", MFnNumericData::kDouble, 0.0, &status );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"rightTrigger\" attribute" );
+  // add attribute
+  status = addAttribute( m_rightTrigger );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"rightTrigger\" attribute to Node" );
+
+
+  int numButtons=SDL_JoystickNumButtons(m_js);
+  for(int i=0; i<numButtons; ++i)
+  {
+    char longstr[40];
+    char shortstr[6];
+    m_buttons.append(numAttr.create(longstr,shortstr,MFnNumericData::kBoolean, 0, &status));
+    CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"button\" attribute" );
+    // add attribute
+    status = addAttribute( m_buttons[i] );
+    CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"button\" attribute to Node" );
+
+  }
+
   m_output = numAttr.create( "dummyOut", "dout", MFnNumericData::kDouble, 0.0, &status );
   CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"output\" attribute" );
   // add attribute
   numAttr.setKeyable(true);
   numAttr.setStorable(true);
-  numAttr.setHidden(false);
+  numAttr.setHidden(true);
   numAttr.setDefault(true);
 
   status = addAttribute( m_output );
@@ -301,23 +314,31 @@ MStatus JoyPadNode::initialize()
 	attributeAffects( live, m_leftHatUD);
 	attributeAffects( live, m_rightHatLR);
 	attributeAffects( live, m_rightHatUD);
+	attributeAffects( live, m_leftTrigger);
+	attributeAffects( live, m_rightTrigger);
 	attributeAffects( live, m_output);
 
 	attributeAffects( m_output, m_leftHatLR);
 	attributeAffects( m_output, m_leftHatUD);
 	attributeAffects( m_output, m_rightHatLR);
 	attributeAffects( m_output, m_rightHatUD);
+	attributeAffects( m_output, m_leftTrigger);
+	attributeAffects( m_output, m_rightTrigger);
 
 	attributeAffects( frameRate, m_leftHatLR);
 	attributeAffects( frameRate, m_leftHatUD);
 	attributeAffects( frameRate, m_rightHatLR);
 	attributeAffects( frameRate, m_rightHatUD);
 	attributeAffects( frameRate, m_output);
+	attributeAffects( frameRate, m_leftTrigger);
+	attributeAffects( frameRate, m_rightTrigger);
 
 	attributeAffects( m_sensitivity, m_leftHatLR);
 	attributeAffects( m_sensitivity, m_leftHatUD);
 	attributeAffects( m_sensitivity, m_rightHatLR);
 	attributeAffects( m_sensitivity, m_rightHatUD);
+	attributeAffects( m_sensitivity, m_leftTrigger);
+	attributeAffects( m_sensitivity, m_rightTrigger);
 
 
 
@@ -360,6 +381,26 @@ MStatus JoyPadNode::compute( const MPlug& plug, MDataBlock& block )
 		double &outrightUD=hndrightUD.asDouble();
 		outrightUD+=doubleData[DBLOCKRIGHTHATUD];
 
+		MDataHandle hndleftTrigger=block.outputValue( m_leftTrigger, &status );
+		CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL(status, "Error in block.outputValue for m_leftTrigger");
+		double &outleftTrigger=hndleftTrigger.asDouble();
+		outleftTrigger+=doubleData[DBLOCKLEFTTRIGGER];
+
+		MDataHandle hndrightTrigger=block.outputValue( m_rightTrigger, &status );
+		CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL(status, "Error in block.outputValue for m_rightTrigger");
+		double &outrightTrigger=hndrightTrigger.asDouble();
+		outrightTrigger+=doubleData[DBLOCKRIGHTTRIGGER];
+		MFnDependencyNode dependencyFn( thisMObject() , &status );
+		CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable to initialize dependency node" );
+		for(unsigned int i=0; i<m_buttons.length(); ++i)
+		{
+			MPlug buttonPlug = dependencyFn.findPlug( m_buttons[i] , true , &status );
+			CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get button plug" );
+			// now grab the value and place in our variable
+			status = buttonPlug.setValue( SDL_JoystickGetButton(m_js,i) );
+			CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get value from button plug" );
+
+		}
 
 		}
 		block.setClean( plug );
@@ -381,11 +422,10 @@ MStatus JoyPadNode::compute( const MPlug& plug, MDataBlock& block )
 
 SDL_Joystick *getJoystick(int _index)
 {
-SDL_Joystick *js;
+	SDL_Joystick *js;
 
-std::cerr<<"The name of the joystick is:\n";
+	std::cerr<<"The name of the joystick is:\n";
 
-//std::cerr<<SDL_JoystickName(_index)<<"\n";
 
 	SDL_JoystickEventState(SDL_ENABLE);
 	js=SDL_JoystickOpen(_index);
@@ -393,10 +433,10 @@ std::cerr<<"The name of the joystick is:\n";
 	sprintf(msg,"Num Axis %d",SDL_JoystickNumAxes(js));
 	MGlobal::displayInfo(msg);
 	sprintf(msg,"Num Buttons %d",SDL_JoystickNumButtons(js));//	Returns the number of joysitck buttons
-			MGlobal::displayInfo(msg);
+	MGlobal::displayInfo(msg);
 	sprintf(msg,"Num Balls %d",SDL_JoystickNumBalls(js));//	Returns the number of joysitck balls
-			MGlobal::displayInfo(msg);
+	MGlobal::displayInfo(msg);
 	sprintf(msg,"Num Num Hats %d",SDL_JoystickNumHats(js));//	Returns the number of joysitck hats
-MGlobal::displayInfo(msg);
+	MGlobal::displayInfo(msg);
 	return js;
 }

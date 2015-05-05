@@ -290,6 +290,9 @@ MStatus JoyPadNode::initialize()
   {
     char longstr[40];
     char shortstr[6];
+    sprintf(longstr,"button%02d",i);
+    sprintf(shortstr,"bt%02d",i);
+
     m_buttons.append(numAttr.create(longstr,shortstr,MFnNumericData::kBoolean, 0, &status));
     CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"button\" attribute" );
     // add attribute

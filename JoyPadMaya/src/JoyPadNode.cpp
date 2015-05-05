@@ -1,6 +1,10 @@
 #include "JoyPadNode.h"
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnCompoundAttribute.h>
+#include <maya/MFnEnumAttribute.h>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+
 enum XBOXAxis
 {
   LEFTSTICKLR, //0
@@ -31,6 +35,9 @@ enum XBOXButtons
   XBOXDPADLEFT, //13
   XBOXDPARRIGHT //14
 };
+
+
+
 
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief simple macro to check status and return if error
@@ -66,6 +73,9 @@ MObject JoyPadNode::m_rightHatLR;
 MObject JoyPadNode::m_rightHatUD;
 MObject JoyPadNode::m_leftTrigger;
 MObject JoyPadNode::m_rightTrigger;
+MObject JoyPadNode::m_analogMode;
+MObject JoyPadNode::m_analogRange;
+
 MObjectArray JoyPadNode::m_buttons;
 
 
@@ -115,6 +125,7 @@ void JoyPadNode::threadHandler()
 
   MStatus status;
   int sensitivity;
+  double analogRange;
   MFnDependencyNode dependencyFn( thisMObject() , &status );
   CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable to initialize dependency node" );
 
@@ -136,6 +147,15 @@ void JoyPadNode::threadHandler()
       // now grab the value and place in our variable
       status = sensitivityPlug.getValue( sensitivity );
       CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get value from sensitivity plug" );
+
+      MPlug analogRangePlug = dependencyFn.findPlug( m_analogRange , true , &status );
+      CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get range plug" );
+      // now grab the value and place in our variable
+      status = analogRangePlug.getValue( analogRange );
+      CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get value from range plug" );
+
+
+
 
       float lhatUD=0.0;
       float rhatUD=0.0;
@@ -179,26 +199,26 @@ void JoyPadNode::threadHandler()
         // filter against a tolerance to get rid of any noise
         if ( ( lx <= -sensitivity ) || (lx >= sensitivity ) )
         {
-          lhatLR=UPDATE*lx/float(JOYMAX);
+          lhatLR=analogRange*lx/float(JOYMAX);
         }
         else lhatLR=0.0;
 
         if ( ( rx <= -sensitivity ) || (rx >= sensitivity ) )
         {
-          rhatLR=UPDATE*rx/float(JOYMAX);
+          rhatLR=analogRange*rx/float(JOYMAX);
         }
         else rhatLR=0.0;
 
         if ( ( ly <= -sensitivity ) || (ly >= sensitivity ) )
         {
-          lhatUD=-UPDATE*ly/float(JOYMAX);
+          lhatUD=-analogRange*ly/float(JOYMAX);
 
         }
         else lhatUD=0.0;
 
         if ( ( ry <= -sensitivity ) || (ry >= sensitivity ) )
         {
-          rhatUD=-UPDATE*ry/float(JOYMAX);
+          rhatUD=-analogRange*ry/float(JOYMAX);
 
         }
         else rhatUD=0.0;
@@ -259,12 +279,36 @@ MStatus JoyPadNode::initialize()
   numAttr.setSoftMin(200);
   numAttr.setSoftMax(32000);
   numAttr.setMax(33000);
-
-
   CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"sensitivity\" attribute" );
   // add attribute
   status = addAttribute( m_sensitivity );
   CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"sensitivity\" attribute to Node" );
+
+  m_analogRange = numAttr.create( "analogRange", "arange", MFnNumericData::kDouble, 0.6, &status );
+  numAttr.setMin(0.01);
+  numAttr.setSoftMin(0.01);
+  numAttr.setSoftMax(10);
+  numAttr.setMax(10);
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"analog Range\" attribute" );
+  // add attribute
+  status = addAttribute( m_analogRange );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"analog range\" attribute to Node" );
+
+
+
+  MFnEnumAttribute    enumAttr;
+  // note that f is used later as the shortcut for frequency so we use ft
+  m_analogMode = enumAttr.create( "analogMode", "amode", 0, &status );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"function\" attribute" );
+
+  enumAttr.addField( "absolute", JoyPadNode::ABSOLUTE );
+  enumAttr.addField( "Add", JoyPadNode::ADD );
+  enumAttr.addField( "Sub", JoyPadNode::SUB );
+  enumAttr.setHidden( false );
+  enumAttr.setKeyable( true );
+  status = addAttribute( m_analogMode );
+  CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"function type\" attribute to SineNode" );
+
 
   m_leftHatLR = numAttr.create( "leftHatLR", "lhlr", MFnNumericData::kDouble, 0.0, &status );
   CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"leftHatLR\" attribute" );
@@ -367,6 +411,7 @@ MStatus JoyPadNode::initialize()
 	return MS::kSuccess;
 }
 
+double equal(double _a){return _a;}
 MStatus JoyPadNode::compute( const MPlug& plug, MDataBlock& block )
 {
 	MStatus status;
@@ -375,6 +420,12 @@ MStatus JoyPadNode::compute( const MPlug& plug, MDataBlock& block )
 	if( plug==m_output || plug== m_leftHatLR || plug == m_leftHatUD ||
 			plug==m_rightHatLR || plug == m_rightHatUD)
 	{
+
+    // get data handle for analog mode enum
+    MDataHandle funcData = block.inputValue( m_analogMode , &status );
+    CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to get data handle for analog mode  plug" );
+
+
 
 		// Access the data and update the output attribute
 		MCharBuffer buffer;
@@ -386,32 +437,61 @@ MStatus JoyPadNode::compute( const MPlug& plug, MDataBlock& block )
 		MDataHandle hndleftLR=block.outputValue( m_leftHatLR, &status );
 		CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL(status, "Error in block.outputValue for m_leftHatLR");
 		double &outleftLR=hndleftLR.asDouble();
-		outleftLR+=doubleData[DBLOCKLEFTHATLR];
 
 		MDataHandle hndleftUD=block.outputValue( m_leftHatUD, &status );
 		CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL(status, "Error in block.outputValue for m_leftHatLR");
 		double &outleftUD=hndleftUD.asDouble();
-		outleftUD+=doubleData[DBLOCKLEFTHATUD];
 
 		MDataHandle hndrightLR=block.outputValue( m_rightHatLR, &status );
 		CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL(status, "Error in block.outputValue for m_leftHatLR");
 		double &outrightLR=hndrightLR.asDouble();
-		outrightLR+=doubleData[DBLOCKRIGHTHATLR];
 
 		MDataHandle hndrightUD=block.outputValue( m_rightHatUD, &status );
 		CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL(status, "Error in block.outputValue for m_leftHatLR");
 		double &outrightUD=hndrightUD.asDouble();
-		outrightUD+=doubleData[DBLOCKRIGHTHATUD];
 
 		MDataHandle hndleftTrigger=block.outputValue( m_leftTrigger, &status );
 		CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL(status, "Error in block.outputValue for m_leftTrigger");
 		double &outleftTrigger=hndleftTrigger.asDouble();
-		outleftTrigger+=doubleData[DBLOCKLEFTTRIGGER];
 
 		MDataHandle hndrightTrigger=block.outputValue( m_rightTrigger, &status );
 		CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL(status, "Error in block.outputValue for m_rightTrigger");
 		double &outrightTrigger=hndrightTrigger.asDouble();
-		outrightTrigger+=doubleData[DBLOCKRIGHTTRIGGER];
+
+
+	switch(funcData.asInt())
+	{
+		case ABSOLUTE :
+			outleftLR=doubleData[DBLOCKLEFTHATLR];
+			outleftUD=doubleData[DBLOCKLEFTHATUD];
+			outrightLR=doubleData[DBLOCKRIGHTHATLR];
+			outrightUD=doubleData[DBLOCKRIGHTHATUD];
+			outleftTrigger=doubleData[DBLOCKLEFTTRIGGER];
+			outrightTrigger=doubleData[DBLOCKRIGHTTRIGGER];
+
+		break;
+		case ADD :
+			outleftLR+=doubleData[DBLOCKLEFTHATLR];
+			outleftUD+=doubleData[DBLOCKLEFTHATUD];
+			outrightLR+=doubleData[DBLOCKRIGHTHATLR];
+			outrightUD+=doubleData[DBLOCKRIGHTHATUD];
+			outleftTrigger+=doubleData[DBLOCKLEFTTRIGGER];
+			outrightTrigger+=doubleData[DBLOCKRIGHTTRIGGER];
+
+		break;
+		case SUB :
+			outleftLR-=doubleData[DBLOCKLEFTHATLR];
+			outleftUD-=doubleData[DBLOCKLEFTHATUD];
+			outrightLR-=doubleData[DBLOCKRIGHTHATLR];
+			outrightUD-=doubleData[DBLOCKRIGHTHATUD];
+			outleftTrigger-=doubleData[DBLOCKLEFTTRIGGER];
+			outrightTrigger-=doubleData[DBLOCKRIGHTTRIGGER];
+
+		break;
+	}
+
+
+
 		MFnDependencyNode dependencyFn( thisMObject() , &status );
 		CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable to initialize dependency node" );
 		for(unsigned int i=0; i<m_buttons.length(); ++i)

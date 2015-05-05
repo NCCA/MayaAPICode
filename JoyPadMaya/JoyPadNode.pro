@@ -25,6 +25,7 @@ HEADERS+=include/JoyPadNode.h
 
 OTHER_FILES+=test.mel
 INCLUDEPATH+=include
+INCLUDEPATH+=/usr/local/include
 # these are defines required by Maya to re-define some C++
 # stuff, we will add some more later to tell what platform
 # we are on as well

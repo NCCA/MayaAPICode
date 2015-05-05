@@ -38,14 +38,8 @@ public:
 
 	static void*		creator();
 	static MStatus	initialize();
-	typedef struct
-	{
-		MObject value;
-		MObject sens;
-		MObject mode;
-	}Analog;
-
-public:
+private:
+	enum ANALOGMODE{ABSOLUTE,ADD,SUB};
 
 	static MObject	m_output;
 	static MObject	m_leftHatLR;
@@ -55,17 +49,13 @@ public:
 	static MObject	m_sensitivity;
 	static MObject	m_rightTrigger;
 	static MObject	m_leftTrigger;
-
+	static MObject	m_analogMode;
+	static MObject	m_analogRange;
 
 	static MObjectArray m_buttons;
-	// Boolean attribute for deciding if we are going
-	// to update XZ or XY. Only two inputs from the
-	// gameInput in this example
-//	static MObject		m_updateTranslateXZ;
-
+public :
 	static MTypeId		m_id;
 	static SDL_Joystick *m_js;
-private:
 };
 
 

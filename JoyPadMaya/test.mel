@@ -1,3 +1,5 @@
+file -f -new;
+unloadPlugin JoyPad;
 loadPlugin "/Users/jmacey/teaching/Code/MayaAPICode/JoyPadMaya/JoyPad.bundle";
 string $node = `createNode JoyPadNode`;
 string $cube[] = `polyCube`;

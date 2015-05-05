@@ -1,5 +1,6 @@
 #include "JoyPadNode.h"
 #include <maya/MFnDependencyNode.h>
+#include <maya/MFnCompoundAttribute.h>
 enum XBOXAxis
 {
   LEFTSTICKLR, //0
@@ -105,6 +106,13 @@ void JoyPadNode::postConstructor()
 
 void JoyPadNode::threadHandler()
 {
+  if (SDL_Init(  SDL_INIT_JOYSTICK ) < 0 )
+  {
+    // Or die on error
+    //MCHECKERROR(0,"Unable to initialize SDL");
+  }
+  m_js=getJoystick(0);
+
   MStatus status;
   int sensitivity;
   MFnDependencyNode dependencyFn( thisMObject() , &status );
@@ -139,6 +147,21 @@ void JoyPadNode::threadHandler()
        // we need to pump the event queue before reading JS values
        while (SDL_PollEvent(&event))
         {
+
+         switch (event.type)
+         {
+            case SDL_CONTROLLERDEVICEADDED:
+              MGlobal::displayError("Joypad added");
+            break;
+
+           case SDL_CONTROLLERDEVICEREMOVED:
+           MGlobal::displayError("Joypad removed");
+
+           break;
+
+
+         }
+
         }
 
         // process the joystick axis 0 is the left stick l->r
@@ -210,8 +233,11 @@ void JoyPadNode::threadHandler()
 
 }
 
+
+
 void JoyPadNode::threadShutdownHandler()
 {
+	SDL_Quit();
 	setDone( true );
 }
 
@@ -222,14 +248,6 @@ void* JoyPadNode::creator()
 
 MStatus JoyPadNode::initialize()
 {
-  // Initialize SDL's Video subsystem
-    if (SDL_Init(  SDL_INIT_JOYSTICK ) < 0 )
-    {
-      // Or die on error
-      //MCHECKERROR(0,"Unable to initialize SDL");
-    }
-    m_js=getJoystick(0);
-
 
 
 	MStatus status;
@@ -241,6 +259,7 @@ MStatus JoyPadNode::initialize()
   numAttr.setSoftMin(200);
   numAttr.setSoftMax(32000);
   numAttr.setMax(33000);
+
 
   CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"sensitivity\" attribute" );
   // add attribute
@@ -443,3 +462,6 @@ SDL_Joystick *getJoystick(int _index)
 	MGlobal::displayInfo(msg);
 	return js;
 }
+
+
+

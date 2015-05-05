@@ -37,7 +37,13 @@ public:
 	virtual void		threadShutdownHandler();
 
 	static void*		creator();
-	static MStatus		initialize();
+	static MStatus	initialize();
+	typedef struct
+	{
+		MObject value;
+		MObject sens;
+		MObject mode;
+	}Analog;
 
 public:
 
@@ -49,6 +55,7 @@ public:
 	static MObject	m_sensitivity;
 	static MObject	m_rightTrigger;
 	static MObject	m_leftTrigger;
+
 
 	static MObjectArray m_buttons;
 	// Boolean attribute for deciding if we are going

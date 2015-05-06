@@ -2,9 +2,7 @@
 #define JOYPADNODE_H__
 
 #include <maya/MTypeId.h>
-
 #include <maya/MIOStream.h>
-
 #include <maya/MPlug.h>
 #include <maya/MDataBlock.h>
 #include <maya/MFnNumericAttribute.h>
@@ -40,6 +38,7 @@ public:
 	static MStatus	initialize();
 private:
 	enum ANALOGMODE{ABSOLUTE,ADD,SUB};
+	enum BUTTONMODE{CONTACT,LATCH};
 
 	static MObject	m_output;
 	static MObject	m_leftHatLR;

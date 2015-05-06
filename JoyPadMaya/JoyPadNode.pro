@@ -23,7 +23,8 @@ SOURCES+=src/JoyPadNode.cpp \
 
 HEADERS+=include/JoyPadNode.h
 
-OTHER_FILES+=test.mel
+OTHER_FILES+=test.mel \
+              examples.mel
 INCLUDEPATH+=include
 INCLUDEPATH+=/usr/local/include
 # these are defines required by Maya to re-define some C++

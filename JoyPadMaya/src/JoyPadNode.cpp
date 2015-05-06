@@ -86,8 +86,6 @@ MObject JoyPadNode::m_sensitivity;
 SDL_Joystick *JoyPadNode::m_js;
 SDL_Joystick *getJoystick(int _index);
 
-/// @brief the value to update the ship position by
-const static float UPDATE=0.5;
 /// @brief the max joystick analogue value
 const static int JOYMAX=32767;
 /// @brief a sensitivity thereshold for the js.
@@ -268,7 +266,12 @@ void* JoyPadNode::creator()
 
 MStatus JoyPadNode::initialize()
 {
-
+  if (SDL_Init(  SDL_INIT_JOYSTICK ) < 0 )
+  {
+    // Or die on error
+    //MCHECKERROR(0,"Unable to initialize SDL");
+  }
+  m_js=getJoystick(0);
 
 	MStatus status;
 
@@ -349,19 +352,30 @@ MStatus JoyPadNode::initialize()
 
 
   int numButtons=SDL_JoystickNumButtons(m_js);
-  for(int i=0; i<numButtons; ++i)
+  int buttonNumber=0;
+  for(int i=0; i<numButtons*2; i+=2)
   {
     char longstr[40];
     char shortstr[6];
-    sprintf(longstr,"button%02d",i);
-    sprintf(shortstr,"bt%02d",i);
+    sprintf(longstr,"button%02d",buttonNumber);
+    sprintf(shortstr,"bt%02d",buttonNumber);
 
     m_buttons.append(numAttr.create(longstr,shortstr,MFnNumericData::kBoolean, 0, &status));
     CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"button\" attribute" );
     // add attribute
     status = addAttribute( m_buttons[i] );
     CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"button\" attribute to Node" );
+    MGlobal::displayError(longstr);
 
+    sprintf(longstr,"buttonLatch%02d",buttonNumber);
+    sprintf(shortstr,"btl%02d",buttonNumber);
+    MGlobal::displayError(longstr);
+    m_buttons.append(numAttr.create(longstr,shortstr,MFnNumericData::kBoolean, 0, &status));
+    CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to create \"button\" attribute" );
+    // add attribute
+    status = addAttribute( m_buttons[i+1] );
+    CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"button\" attribute to Node" );
+    ++buttonNumber;
   }
 
   m_output = numAttr.create( "dummyOut", "dout", MFnNumericData::kDouble, 0.0, &status );
@@ -494,14 +508,25 @@ MStatus JoyPadNode::compute( const MPlug& plug, MDataBlock& block )
 
 		MFnDependencyNode dependencyFn( thisMObject() , &status );
 		CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable to initialize dependency node" );
-		for(unsigned int i=0; i<m_buttons.length(); ++i)
+
+		int buttonNumber=0;
+		for(unsigned int i=0; i<m_buttons.length(); i+=2)
 		{
+			bool buttonState=SDL_JoystickGetButton(m_js,buttonNumber);
 			MPlug buttonPlug = dependencyFn.findPlug( m_buttons[i] , true , &status );
 			CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get button plug" );
 			// now grab the value and place in our variable
-			status = buttonPlug.setValue( SDL_JoystickGetButton(m_js,i) );
+			status = buttonPlug.setValue( buttonState );
 			CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get value from button plug" );
 
+			buttonPlug = dependencyFn.findPlug( m_buttons[i+1] , true , &status );
+			CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get button plug" );
+			// now grab the value and place in our variable
+			bool v;
+			status=buttonPlug.getValue(v);
+			status = buttonPlug.setValue( v^buttonState );
+			CHECK_STATUS_AND_RETURN_IF_FAIL( status , "Unable get value from button plug" );
+			++buttonNumber;
 		}
 
 		}

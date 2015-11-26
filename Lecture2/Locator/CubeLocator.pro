@@ -94,11 +94,13 @@ linux:DEFINES+=linux
 ####################################################################################
 macx:DEFINES+=OSMac_
 macx:DEFINES+=__x86_64__
-macx:MAYALOCATION=/Applications/Autodesk/maya2012
+macx:MAYALOCATION=/Applications/Autodesk/maya2016
 macx:CONFIG -= app_bundle
 macx:INCLUDEPATH+=$$MAYALOCATION/devkit/include
 macx:INCLUDEPATH+=/opt/X11/include
 macx:LIBS+= -framework OpenGL
+macx:QMAKE_MAC_SDK = macosx10.11
+
 ####################################################################################
 # under mac we need to build a bundle, to do this use
 # the -bundle flag but we also need to not use -dynamic lib so

@@ -1,5 +1,5 @@
-#ifndef __CUSTOMSPHERE_H__
-#define __CUSTOMSPHERE_H__
+#ifndef CUSTOMSPHERE_H__
+#define CUSTOMSPHERE_H__
 
 #include <maya/MGlobal.h>
 #include <maya/MObject.h>

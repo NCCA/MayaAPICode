@@ -93,9 +93,10 @@ linux:DEFINES+=linux
 # tell maya we're building for Mac
 ####################################################################################
 macx:DEFINES+=OSMac_
-macx:MAYALOCATION=/Applications/Autodesk/maya2012
+macx:MAYALOCATION=/Applications/Autodesk/maya2016/
 macx:CONFIG -= app_bundle
 macx:INCLUDEPATH+=$$MAYALOCATION/devkit/include
+macx:QMAKE_MAC_SDK = macosx10.11
 ####################################################################################
 # under mac we need to build a bundle, to do this use
 # the -bundle flag but we also need to not use -dynamic lib so

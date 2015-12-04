@@ -2,7 +2,6 @@
 #define CUSTOMSPHERE_H__
 
 #include <maya/MGlobal.h>
-#include <maya/MObject.h>
 #include <maya/MArgList.h>
 #include <maya/MPxCommand.h>
 
@@ -51,7 +50,7 @@ private:
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief the number of spheres created
   //----------------------------------------------------------------------------------------------------------------------
-  unsigned int		m_count;
+  int		m_count;
 
 };
 

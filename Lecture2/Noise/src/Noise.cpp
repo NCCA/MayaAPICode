@@ -5,7 +5,6 @@
 #include <boost/random.hpp>
 
 
-
 //----------------------------------------------------------------------------------------------------------------------
 void Noise :: resetTables()
 {
@@ -30,6 +29,7 @@ void Noise :: resetTables()
     m_index[which]=m_index[i];
     m_index[i]=tmp;
   }
+
   for(i=0; i<256; ++i)
   {
     m_noiseTable[i]=randomPositiveNumberTable();
@@ -110,10 +110,7 @@ float Noise::noise(float _scale, const MPoint &_p)
 
 
 //----------------------------------------------------------------------------------------------------------------------
-float Noise :: turbulance(
-                          float _scale,
-                          const MPoint &_p
-                          )
+float Noise :: turbulance(float _scale, const MPoint &_p  )
 {
   float val= (noise(_scale,_p)/2.0) +
              (noise(2.0*_scale,_p)/4.0) +
@@ -126,12 +123,7 @@ float Noise :: turbulance(
 // values for this are based on http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
 //----------------------------------------------------------------------------------------------------------------------
 
-float Noise::complex(
-                      int _steps,
-                      float _persistence,
-                      float _scale,
-                      const MPoint &_p
-                     )
+float Noise::complex( int _steps,float _persistence,float _scale, const MPoint &_p )
 {
   float val=0.0;
 

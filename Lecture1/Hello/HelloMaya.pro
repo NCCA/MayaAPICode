@@ -105,5 +105,5 @@ mac:LIBS -=-dynamiclib
 macx:LIBS += -L$$MAYALOCATION/Maya.app/Contents/MacOS \
 						 $$MAYALIBS
 ####################################################################################
-
+CONFIG+=c++11
 

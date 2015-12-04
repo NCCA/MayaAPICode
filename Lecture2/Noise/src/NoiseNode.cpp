@@ -4,6 +4,7 @@
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MTime.h>
 
+#include <boost/format.hpp>
 
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief simple macro to check status and return if error
@@ -267,7 +268,8 @@ MStatus NoiseNode::compute( const MPlug &_plug , MDataBlock &_data )
     MDataHandle noiseType = _data.inputValue( m_noiseType , &status );
     CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to get data handle for function plug" );
     double out;
-    switch(noiseType.asInt())
+
+    switch(noiseType.asShort())
     {
       case NOISE :
           out=m_noise->noise(scale,MPoint(tx,ty,tz))/amp;
@@ -282,6 +284,7 @@ MStatus NoiseNode::compute( const MPlug &_plug , MDataBlock &_data )
 
     break;
     }
+
 
      outputData.set(out);
     // clean the output plug, ie unset it from dirty so that maya does not re-evaluate it

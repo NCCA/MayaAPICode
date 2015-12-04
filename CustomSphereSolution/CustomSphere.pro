@@ -28,6 +28,7 @@ INCLUDEPATH+=include
 # we are on as well
 DEFINES+=REQUIRE_IOSTREAM \
          _BOOL
+INCLUDEPATH+=/usr/local/include
 ####################################################################################
 # These are the maya libs we need to link to, this will change depending
 # upon which maya framework we use, just add them to the end of
@@ -92,7 +93,7 @@ linux:DEFINES+=linux
 # tell maya we're building for Mac
 ####################################################################################
 macx:DEFINES+=OSMac_
-macx:MAYALOCATION=/Applications/Autodesk/maya2011
+macx:MAYALOCATION=/Applications/Autodesk/maya2016
 macx:CONFIG -= app_bundle
 macx:INCLUDEPATH+=$$MAYALOCATION/devkit/include
 ####################################################################################

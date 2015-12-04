@@ -14,7 +14,7 @@ CC            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 DEFINES       = -DREQUIRE_IOSTREAM -D_BOOL -DOSMac_
 CFLAGS        = -pipe -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -mmacosx-version-min=10.7 -Wall -W -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -mmacosx-version-min=10.7 -Wall -W -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7 -Wall -W -fPIC $(DEFINES)
 INCPATH       = -I. -I/Applications/Autodesk/maya2016/devkit/include -I/Users/jmacey/Qt/5.5/clang_64/mkspecs/macx-clang
 QMAKE         = /Users/jmacey/Qt/5.5/clang_64/bin/qmake
 DEL_FILE      = rm -f
@@ -35,7 +35,7 @@ COMPRESS      = gzip -9f
 DISTNAME      = HelloMaya.bundle1.0.0
 DISTDIR = /Users/jmacey/teaching/Code/MayaAPICode/Lecture1/Hello/.tmp/HelloMaya.bundle1.0.0
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
-LFLAGS        = -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -mmacosx-version-min=10.7 -Wl,-rpath,/Users/jmacey/Qt/5.5/clang_64/lib
+LFLAGS        = -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -stdlib=libc++ -mmacosx-version-min=10.7 -Wl,-rpath,/Users/jmacey/Qt/5.5/clang_64/lib
 LIBS          = $(SUBLIBS) -bundle -L/Applications/Autodesk/maya2016/Maya.app/Contents/MacOS -lOpenMaya -lFoundation 
 AR            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar cq
 RANLIB        = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib -s
@@ -171,11 +171,13 @@ DIST          = /Users/jmacey/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/qt_config.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/macx-clang/qmake.conf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/exclusive_builds.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/default_pre.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/mac/default_pre.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/resolve_config.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/default_post.prf \
+		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/c++11.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/mac/sdk.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/mac/default_post.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/mac/objective_c.prf \
@@ -197,6 +199,8 @@ QMAKE_COMP_QMAKE_OBJECTIVE_CFLAGS = -pipe \
 		-g \
 		-isysroot \
 		/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk \
+		-std=c++11 \
+		-stdlib=libc++ \
 		-mmacosx-version-min=10.7 \
 		-Wall \
 		-W
@@ -349,11 +353,13 @@ Makefile: HelloMaya.pro /Users/jmacey/Qt/5.5/clang_64/mkspecs/macx-clang/qmake.c
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/qt_config.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/macx-clang/qmake.conf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/exclusive_builds.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/default_pre.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/mac/default_pre.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/resolve_config.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/default_post.prf \
+		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/c++11.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/mac/sdk.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/mac/default_post.prf \
 		/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/mac/objective_c.prf \
@@ -488,11 +494,13 @@ Makefile: HelloMaya.pro /Users/jmacey/Qt/5.5/clang_64/mkspecs/macx-clang/qmake.c
 /Users/jmacey/Qt/5.5/clang_64/mkspecs/features/qt_config.prf:
 /Users/jmacey/Qt/5.5/clang_64/mkspecs/macx-clang/qmake.conf:
 /Users/jmacey/Qt/5.5/clang_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /Users/jmacey/Qt/5.5/clang_64/mkspecs/features/exclusive_builds.prf:
 /Users/jmacey/Qt/5.5/clang_64/mkspecs/features/default_pre.prf:
 /Users/jmacey/Qt/5.5/clang_64/mkspecs/features/mac/default_pre.prf:
 /Users/jmacey/Qt/5.5/clang_64/mkspecs/features/resolve_config.prf:
 /Users/jmacey/Qt/5.5/clang_64/mkspecs/features/default_post.prf:
+/Users/jmacey/Qt/5.5/clang_64/mkspecs/features/c++11.prf:
 /Users/jmacey/Qt/5.5/clang_64/mkspecs/features/mac/sdk.prf:
 /Users/jmacey/Qt/5.5/clang_64/mkspecs/features/mac/default_post.prf:
 /Users/jmacey/Qt/5.5/clang_64/mkspecs/features/mac/objective_c.prf:

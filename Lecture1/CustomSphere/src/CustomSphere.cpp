@@ -68,7 +68,7 @@ return ((_max-_min)*((float)rand()/RAND_MAX))+_min;
 MStatus CustomSphere::redoIt()
 {
   // loop for the number of arguments passed in and create some random spheres
-  for( unsigned int i = 0; i < m_count; ++i )
+  for(  int i = 0; i < m_count; ++i )
 	{
     // fist I'm going to create a maya command as follows
     // sphere -name "sphere[n]" where n is the value of i
@@ -103,7 +103,7 @@ MStatus CustomSphere::undoIt()
 {
   // here we undo what was done in the re-do method,
   // this will be called when maya calles the undo method
-  for( unsigned int i = 0; i < m_count; ++i )
+  for(  int i = 0; i < m_count; ++i )
   {
     std::string cmd;
     // delete the objects as created previously

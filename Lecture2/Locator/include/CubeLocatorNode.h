@@ -10,6 +10,15 @@
 #include <maya/MPxLocatorNode.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnNumericAttribute.h>
+
+// Viewport 2.0
+#include <maya/MDrawRegistry.h>
+#include <maya/MPxDrawOverride.h>
+#include <maya/MUserData.h>
+#include <maya/MDrawContext.h>
+#include <maya/MHWGeometryUtilities.h>
+#include <maya/MPointArray.h>
+
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief a simple maya locator node using OpenGL to draw a cube with width / height / depth
 /// paramaters. Also the volume of the cube is created each time an attribute is changed
@@ -49,6 +58,12 @@ public:
                         M3dView::DisplayStyle _style,
                         M3dView::DisplayStatus _status
                         );
+
+	// Viewport 2.0 manipulator draw overrides
+	virtual void		preDrawUI( const M3dView &view );
+	virtual void		drawUI( MHWRender::MUIDrawManager& drawManager,
+										const MHWRender::MFrameContext& frameContext) const;
+
 
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief the id of this plugin must be public so we can set outside of class

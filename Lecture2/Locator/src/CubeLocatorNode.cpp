@@ -214,6 +214,23 @@ void CubeLocatorNode::draw(
 
 }
 
+
+
+// Viewport 2.0 manipulator draw overrides
+void CubeLocatorNode::preDrawUI( const M3dView &view )
+{
+
+}
+
+void		CubeLocatorNode::drawUI( MHWRender::MUIDrawManager& drawManager,
+									const MHWRender::MFrameContext& frameContext) const
+{
+
+}
+
+
+
+
 //----------------------------------------------------------------------------------------------------------------------
 void* CubeLocatorNode::creator()
 {

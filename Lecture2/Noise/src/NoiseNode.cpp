@@ -202,9 +202,13 @@ MStatus NoiseNode::compute( const MPlug &_plug , MDataBlock &_data )
   // as this is static value is retained between calls (an elegant hack ;0)
 
   static uint s_seedValue=1;
+  MGlobal::displayWarning("Compute Called");
+
   // see if we get the output plug
   if( _plug == m_output)
 	{
+		MGlobal::displayWarning("Plug m_output Updated");
+
     MDataHandle outputData = _data.outputValue(m_output);
     CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to get data handle for output plug" );
 

@@ -24,35 +24,40 @@ void Noise :: resetTables()
 //----------------------------------------------------------------------------------------------------------------------
 Noise :: Noise()
 {
-  m_index.resize(256);
   int i=0;
   std::generate(std::begin(m_index), std::end(m_index), [&i]{ return i++; });
-  m_noiseTable.resize( 256);
   resetTables();
-
 }
 //----------------------------------------------------------------------------------------------------------------------
 Noise::~Noise()
 {
-  // using smart pointers so nothing to see here ;-)
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
+
 float Noise::latticeNoise(int _i, int _j, int _k)
 {
+
 #define PERM(x) m_index[(x)&255]
 #define INDEX(ix,iy,iz) PERM( (ix) + PERM((iy)+PERM(iz)))
-
+// m_noiseTable[m_index[((_i) + m_index[((_j)+m_index[(_k)&255])&255])&255]];
 return m_noiseTable[INDEX(_i,_j,_k)];
 
 
 }
 
+template <typename T> T lerp(T _a, T _b, float _t)
+{
+  T p;
+  p=_a+(_b-_a)*_t;
+  return p;
+}
+
+
 float Noise::noise(float _scale, const MPoint &_p)
 {
 
-  #define Lerp(F, A,B) A + F * ( B - A )
   float d[2][2][2];
   MPoint pp;
   pp.x=_p.x * _scale ;
@@ -76,14 +81,14 @@ float Noise::noise(float _scale, const MPoint &_p)
       }
     }
   }
-  x0=Lerp(tx, d[0][0][0],d[0][0][1]);
-  x1=Lerp(tx, d[0][1][0],d[0][1][1]);
-  x2=Lerp(tx, d[1][0][0],d[1][0][1]);
-  x3=Lerp(tx, d[1][1][0],d[1][1][1]);
-  y0=Lerp(ty, x0,x1);
-  y1=Lerp(ty, x2,x3);
-  return Lerp(tz,y0,y1);
 
+  x0=lerp(d[0][0][0],d[0][0][1],tx);
+  x1=lerp(d[0][1][0],d[0][1][1],tx);
+  x2=lerp(d[1][0][0],d[1][0][1],tx);
+  x3=lerp(d[1][1][0],d[1][1][1],tx);
+  y0=lerp(x0,x1,ty);
+  y1=lerp(x2,x3,ty);
+  return lerp(y0,y1,tz);
 }
 
 

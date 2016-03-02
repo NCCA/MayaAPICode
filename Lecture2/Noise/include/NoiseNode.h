@@ -1,5 +1,5 @@
-#ifndef __NOISE_NODE_H__
-#define __NOISE_NODE_H__
+#ifndef NOISE_NODE_H__
+#define NOISE_NODE_H__
 
 
 #include <maya/MTypeId.h>
@@ -105,9 +105,10 @@ private :
   //----------------------------------------------------------------------------------------------------------------------
   Noise *m_noise;
   //----------------------------------------------------------------------------------------------------------------------
-  /// @brief the two noise types to use
+  /// @brief the  noise types to use
+  /// @note can't use enum classes from C++ 11 as need to be short or convertable
   //----------------------------------------------------------------------------------------------------------------------
-  enum NoiseTypes{NOISE=0,TURBULANCE=1,COMPLEX=2};
+  enum NoiseTypes{NOISE,TURBULANCE,COMPLEX};
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief the previous seed value to compare with (see notes in compute for rationelle)
   //----------------------------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
-#ifndef __CUBE_NODE_H__
-#define __CUBE_NODE_H__
+#ifndef CUBE_NODE_H__
+#define CUBE_NODE_H__
 
 #define LINUX
 

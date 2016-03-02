@@ -2,60 +2,39 @@
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
-#include <boost/random.hpp>
+#include <algorithm>
+#include <random>
 
 
 //----------------------------------------------------------------------------------------------------------------------
 void Noise :: resetTables()
 {
-  int i;
-
   // create an instance of the Mersenne Twister random number generator
-  boost::mt19937 Generator;
-
-  // now create a random number generator distrib float from 0.0 - 1.0 for Colour
-  boost::uniform_int<int> distibution(0, 256);
+  std::mt19937 gen(m_seed);
   // and create a RandFloat function
-  boost::variate_generator<boost::mt19937 &, boost::uniform_int<int> >randomPositiveNumber(Generator, distibution);
-  boost::uniform_real<float> table(0.0, 1.0);
-  // and create a RandFloat function
-  boost::variate_generator<boost::mt19937 &, boost::uniform_real<float> >randomPositiveNumberTable(Generator, table);
-  setSeed(m_seed);
+  std::uniform_real_distribution<float> randPosFloat(0.0f, 1.0f);
+  // shuffle the index table randomly
+  std::shuffle(std::begin(m_index), std::end(m_index), gen);
 
-  for(i=0; i<256; ++i)
+  for(auto &t : m_noiseTable)
   {
-    int which=int(randomPositiveNumber());
-    unsigned char tmp=m_index[which];
-    m_index[which]=m_index[i];
-    m_index[i]=tmp;
+    t=randPosFloat(gen);
   }
-
-  for(i=0; i<256; ++i)
-  {
-    m_noiseTable[i]=randomPositiveNumberTable();
-  }
-
 }
-
 //----------------------------------------------------------------------------------------------------------------------
 Noise :: Noise()
 {
-  int i;
-  m_seed=1;
-  m_index = new unsigned char[256];
-  for(i=0; i<256; ++i)
-  {
-    m_index[i]=i;
-  }
-  m_noiseTable = new float[256];
+  m_index.resize(256);
+  int i=0;
+  std::generate(std::begin(m_index), std::end(m_index), [&i]{ return i++; });
+  m_noiseTable.resize( 256);
   resetTables();
 
 }
 //----------------------------------------------------------------------------------------------------------------------
 Noise::~Noise()
 {
-  delete m_index;
-  delete m_noiseTable;
+  // using smart pointers so nothing to see here ;-)
 }
 
 

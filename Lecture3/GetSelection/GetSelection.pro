@@ -89,7 +89,7 @@ linux:DEFINES+=linux
 # tell maya we're building for Mac
 ####################################################################################
 macx:DEFINES+=OSMac_
-macx:MAYALOCATION=/Applications/Autodesk/maya2012
+macx:MAYALOCATION=/Applications/Autodesk/maya2016
 macx:CONFIG -= app_bundle
 macx:INCLUDEPATH+=$$MAYALOCATION/devkit/include
 ####################################################################################

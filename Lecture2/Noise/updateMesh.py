@@ -1,5 +1,9 @@
 import maya.cmds as cmds
 
+cmds.createNode('noiseNode')
+cmds.polyPlane(w=42,h=42,sx=180,sy=180)
+
+
 def updateMesh() :
 	nVerts=cmds.polyEvaluate('pPlane1',v=True)
 	for i in range(0,nVerts) :

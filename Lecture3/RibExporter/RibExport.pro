@@ -23,9 +23,13 @@ SOURCES+=src/RibExport.cpp \
 HEADERS +=include/RibExport.h
 OTHER_FILES+=RibExportScript.mel
 INCLUDEPATH+=include
+INCLUDEPATH+=/usr/include
 INCLUDEPATH+=/usr/local/include
 
+
+
 OBJECTS_DIR =obj
+####################################################################################
 # these are defines required by Maya to re-define some C++
 # stuff, we will add some more later to tell what platform
 # we are on as well
@@ -38,7 +42,6 @@ DEFINES+=REQUIRE_IOSTREAM \
 ####################################################################################
 MAYALIBS=-lOpenMaya \
         -lFoundation \
-        -lOpenMayaRender \
         -lOpenMayaAnim
 ####################################################################################
 # these are all the libs usually included by mayald in case you need
@@ -98,7 +101,7 @@ linux:DEFINES+=linux
 # tell maya we're building for Mac
 ####################################################################################
 macx:DEFINES+=OSMac_
-macx:MAYALOCATION=/Applications/Autodesk/maya2012
+macx:MAYALOCATION=/Applications/Autodesk/maya2016
 macx:CONFIG -= app_bundle
 macx:INCLUDEPATH+=$$MAYALOCATION/devkit/include
 ####################################################################################

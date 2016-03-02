@@ -1,5 +1,5 @@
-#ifndef __RIBEXPORT_H__
-#define __RIBEXPORT_H__
+#ifndef RIBEXPORT_H__
+#define RIBEXPORT_H__
 
 #include <maya/MGlobal.h>
 #include <maya/MObject.h>
@@ -7,7 +7,6 @@
 #include <maya/MPxCommand.h>
 #include <maya/MFnDagNode.h>
 #include <maya/MPxFileTranslator.h>
-#include <fstream>
 
 //----------------------------------------------------------------------------------------------------------------------
 // @brief a file export to export rib files

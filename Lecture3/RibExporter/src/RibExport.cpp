@@ -1,5 +1,3 @@
-#include <iostream>
-#include <iomanip>
 #include "RibExport.h"
 #include <maya/MGlobal.h>
 #include <maya/MString.h>
@@ -29,7 +27,6 @@
 #include <boost/format.hpp>
 #include <maya/MFnMeshData.h>
 #include <maya/MObject.h>
-
 
 
 //----------------------------------------------------------------------------------------------------------------------

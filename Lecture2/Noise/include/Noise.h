@@ -8,11 +8,11 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 
-#ifndef _NOISE_H_
-#define _NOISE_H_
+#ifndef NOISE_H_
+#define NOISE_H_
 
 #include <maya/MPoint.h>
-
+#include <vector>
 //----------------------------------------------------------------------------------------------------------------------
 /// @class Noise a simple Perlin noise class
 /// @author Jon Macey
@@ -37,26 +37,15 @@ public :
   /// @param [in] _p the point to sample noise from
   /// @brief returns a noise value
   //----------------------------------------------------------------------------------------------------------------------
-  float noise(
-              float _scale,
-              const MPoint &_p
-             );
+  float noise( float _scale,const MPoint &_p);
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief turbulance function creates higher frequency versions of noise as harmonics
   /// @param [in] _scale the scale to process the noise with
   /// @param [in] _p the point to sample noise from
   /// @brief returns a noise value
   //----------------------------------------------------------------------------------------------------------------------
-  float turbulance(
-                    float _scale,
-                    const MPoint &_p
-                  );
-  float complex(
-                int _steps,
-                float _persistence,
-                float _scale,
-                const MPoint &_p
-               );
+  float turbulance(float _scale, const MPoint &_p );
+  float complex(int _steps, float _persistence, float _scale, const MPoint &_p );
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief reset the noise tables will also re-set the seed so must be called after setSeed is
   /// called
@@ -73,24 +62,24 @@ private :
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief noise table used for the noise generation
   //----------------------------------------------------------------------------------------------------------------------
-  float *m_noiseTable;
+  std::vector <float> m_noiseTable;
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief index into the noise table
   //----------------------------------------------------------------------------------------------------------------------
-  unsigned char * m_index;
-
+  std::vector <unsigned char> m_index;
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief random number generator seed (default to 1)
   //----------------------------------------------------------------------------------------------------------------------
-  unsigned int m_seed;
+  unsigned int m_seed=1.0;
+
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief function to generate latticeNoise (from Ian Stephenson)
   /// @param [in] _i index into table
   /// @param [in] _j index into table
   /// @param [in] _k index into table
-
   //----------------------------------------------------------------------------------------------------------------------
   float latticeNoise(int _i, int _j, int _k);
+
 
 };
 

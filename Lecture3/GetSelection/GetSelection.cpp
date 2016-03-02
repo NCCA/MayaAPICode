@@ -34,3 +34,14 @@ MStatus GetSelection::doIt( const MArgList& )
   return MS::kSuccess;
 }
 
+
+
+
+
+
+
+
+
+
+
+

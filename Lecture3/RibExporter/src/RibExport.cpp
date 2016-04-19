@@ -23,11 +23,13 @@
 #include <maya/MFnTransform.h>
 #include <maya/MCommonRenderSettingsData.h>
 #include <maya/MFnCamera.h>
+#include <maya/MFnLight.h>
+
 #include <maya/MItMeshPolygon.h>
 #include <boost/format.hpp>
 #include <maya/MFnMeshData.h>
 #include <maya/MObject.h>
-
+#include <iomanip>
 
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief simple macro to check status and return if error

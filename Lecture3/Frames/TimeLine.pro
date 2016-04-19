@@ -6,7 +6,7 @@
 # (if your using windows you will need to add a fourth one!)
 # first lets remove Qt core and gui not going to need it
 ####################################################################################
-QT       -= core gui
+QT -= core gui
 ####################################################################################
 # This is the name of the plugin / final lib file
 ####################################################################################
@@ -61,11 +61,14 @@ MAYALIBS=-lOpenMaya \
 ####################################################################################
 # now tell linux we need to build a lib
 ####################################################################################
-linux-g++*:TEMPLATE = lib
+linux-*:TEMPLATE = lib
 ####################################################################################
 # this tells qmake where maya is
 ####################################################################################
-linux-g++*:MAYALOCATION=/opt/autodesk/maya/
+linux-*:MAYALOCATION=/opt/autodesk/maya/
+# and now the devkit is not part of maya where to find it
+# in the Uni I have it in /public/devel/mayaDevkit
+linux-*:DEVKITLOCATION=/public/devel/mayaDevkit
 ####################################################################################
 # under linux we need to use the version of g++ used to build maya
 # in this case g++412
@@ -74,12 +77,12 @@ linux-g++*:MAYALOCATION=/opt/autodesk/maya/
 ####################################################################################
 # set the include path for linux
 ####################################################################################
-linux-g++*:INCLUDEPATH += $$MAYALOCATION/include \
+linux-*:INCLUDEPATH += $$DEVKITLOCATION/include \
                         /usr/X11R6/include
 ####################################################################################
 # set which libs we need to include
 ####################################################################################
-linux-g++*:LIBS += -L$$MAYALOCATION/lib \
+linux-*:LIBS += -L$$MAYALOCATION/lib \
                    $$MAYALIBS
 ####################################################################################
 # tell maya we're building for linux

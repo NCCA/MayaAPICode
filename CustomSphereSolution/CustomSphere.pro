@@ -65,11 +65,15 @@ MAYALIBS=-lOpenMaya \
 ####################################################################################
 # now tell linux we need to build a lib
 ####################################################################################
-linux-g++*:TEMPLATE = lib
+linux-*:TEMPLATE = lib
 ####################################################################################
 # this tells qmake where maya is
 ####################################################################################
-linux-g++*:MAYALOCATION=/opt/autodesk/maya2012-x64/
+linux-*:MAYALOCATION=/opt/autodesk/maya
+# and now the devkit is not part of maya where to find it
+# in the Uni I have it in /public/devel/mayaDevkit
+linux-*:DEVKITLOCATION=/public/devel/mayaDevkit
+
 ####################################################################################
 # under linux we need to use the version of g++ used to build maya
 # in this case g++412
@@ -78,12 +82,12 @@ linux-g++*:MAYALOCATION=/opt/autodesk/maya2012-x64/
 ####################################################################################
 # set the include path for linux
 ####################################################################################
-linux-g++*:INCLUDEPATH += $$MAYALOCATION/include \
+linux-*:INCLUDEPATH += $$DEVKITLOCATION/include \
                         /usr/X11R6/include
 ####################################################################################
 # set which libs we need to include
 ####################################################################################
-linux-g++*:LIBS += -L$$MAYALOCATION/lib \
+linux-*:LIBS += -L$$MAYALOCATION/lib \
                    $$MAYALIBS
 ####################################################################################
 # tell maya we're building for linux

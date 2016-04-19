@@ -2,7 +2,7 @@ TEMPLATE=subdirs
 
 SUBDIRS += \
 CustomSphereSolution/CustomSphere.pro \
-JoyPadMaya/JoyPadNode.pro \
+#JoyPadMaya/JoyPadNode.pro \
 Lecture1/CustomSphere/CustomSphere.pro \
 Lecture1/Hello/HelloMaya.pro \
 Lecture2/Locator/CubeLocator.pro \

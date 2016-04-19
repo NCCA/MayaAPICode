@@ -43,7 +43,9 @@ DEFINES+=REQUIRE_IOSTREAM \
 ####################################################################################
 MAYALIBS=-lOpenMaya \
         -lFoundation \
-        -lOpenMayaAnim
+        -lOpenMayaAnim \
+        -lOpenMayaRender
+
 ####################################################################################
 # these are all the libs usually included by mayald in case you need
 # them just add them to the list above and make sure you escape
@@ -63,7 +65,6 @@ MAYALIBS=-lOpenMaya \
 #-lShared \
 #-lTranslators \
 #-lDataModel \
-#-lRenderModel \
 #-lNurbsEngine \
 #-lDependEngine \
 #-lCommandEngine \

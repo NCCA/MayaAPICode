@@ -30,7 +30,7 @@
 #include <maya/MFnMeshData.h>
 #include <maya/MObject.h>
 #include <iomanip>
-
+#include <string>
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief simple macro to check status and return if error
 /// originally written by Sola Aino
@@ -110,9 +110,6 @@ MStatus		RibExport::writer( const MFileObject& _file,
     // now the camera
     exportCamera();
 
-
-
-
     // now we need to start the World and do the camera transform
     m_stream<<"WorldBegin \n";
 
@@ -123,7 +120,7 @@ MStatus		RibExport::writer( const MFileObject& _file,
       while(!lightIt.isDone())
       {
       // get a handle to this node
-      MObject obj = lightIt.item();
+      MObject obj( lightIt.item());
       exportLight(obj);
       // move on to next node
       lightIt.next();
@@ -180,7 +177,7 @@ MStatus RibExport::exportCamera()
   {
 
   // get a handle to this node
-  MFnCamera cam = it.item();
+  MFnCamera cam ( it.item());
   // the active renderable camera is not stored in the render globals but in the
   // camera itself so we get the value here and output if set
   bool renderable;
@@ -236,7 +233,7 @@ MStatus RibExport::exportCamera()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void RibExport::exportLight(MFnDagNode _node)
+void RibExport::exportLight(MObject _node)
 {
   MGlobal::displayError("you need to implement this!");
 }
@@ -301,12 +298,12 @@ MStatus RibExport::exportMesh(MObject _node)
   while(!itPoly.isDone())
   {
 // Polygon "varying float[2] st" [] "vertex point P" [] "varying normal N" []
-    int vc = itPoly.polygonVertexCount();
+    auto vc = itPoly.polygonVertexCount();
     // in this case we are going to do normal prman polygons and have options to export uv / normals
     m_stream<<"Polygon ";
 
     m_stream<<"\"vertex point P\" [";
-    for(int i=0; i<vc; ++i)
+    for(auto i=0; i<vc; ++i)
     {
       uint index=itPoly.vertexIndex(i);
       m_stream<<vts[index][0]<<" "<<vts[index][1]<<" "<<vts[index][2]<<" ";
@@ -315,7 +312,7 @@ MStatus RibExport::exportMesh(MObject _node)
     if(m_exportNormals)
     {
       m_stream<<  "\"varying normal N\" [";
-      for(int i=0; i<vc; ++i)
+      for(auto i=0; i<vc; ++i)
       {
         uint index=itPoly.normalIndex(i);
         m_stream<<nmls[index][0]<<" "<<nmls[index][1]<<" "<<nmls[index][2]<<" ";
@@ -326,7 +323,7 @@ MStatus RibExport::exportMesh(MObject _node)
     {
       m_stream<<"\"varying float[2] st\" [";
     // have to get the uv index seperately
-      for(int i=0; i<vc; ++i)
+      for(auto i=0; i<vc; ++i)
       {
         int index;
         itPoly.getUVIndex(i,index);

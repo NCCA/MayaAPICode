@@ -1,7 +1,7 @@
 import maya.cmds as cmds
 
 cmds.createNode('noiseNode')
-cmds.polyPlane(w=42,h=42,sx=180,sy=180)
+cmds.polyPlane(w=42,h=42,sx=80,sy=80)
 
 
 def updateMesh() :

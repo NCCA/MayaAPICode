@@ -1,5 +1,5 @@
-#ifndef CUSTOMSPHERE_H__
-#define CUSTOMSPHERE_H__
+#ifndef CUSTOMSPHERE_H_
+#define CUSTOMSPHERE_H_
 
 #include <maya/MGlobal.h>
 #include <maya/MArgList.h>

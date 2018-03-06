@@ -1,5 +1,5 @@
-#ifndef CUBE_NODE_H__
-#define CUBE_NODE_H__
+#ifndef SINE_NODE_H_
+#define SINE_NODE_H_
 
 #define LINUX
 

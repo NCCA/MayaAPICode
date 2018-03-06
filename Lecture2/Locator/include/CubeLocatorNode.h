@@ -1,5 +1,5 @@
-#ifndef CUBE_NODE_H__
-#define CUBE_NODE_H__
+#ifndef CUBENODE_H_
+#define CUBENODE_H_
 
 #define LINUX
 
@@ -11,13 +11,9 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnNumericAttribute.h>
 
-// Viewport 2.0
-#include <maya/MDrawRegistry.h>
-#include <maya/MPxDrawOverride.h>
-#include <maya/MUserData.h>
-#include <maya/MDrawContext.h>
-#include <maya/MHWGeometryUtilities.h>
-#include <maya/MPointArray.h>
+
+
+
 
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief a simple maya locator node using OpenGL to draw a cube with width / height / depth
@@ -59,24 +55,19 @@ public:
                         M3dView::DisplayStatus _status
                         );
 
-	// Viewport 2.0 manipulator draw overrides
-	virtual void		preDrawUI( const M3dView &view );
-	virtual void		drawUI( MHWRender::MUIDrawManager& drawManager,
-										const MHWRender::MFrameContext& frameContext) const;
 
-
+  MFloatPoint getDimensions() const ;
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief the id of this plugin must be public so we can set outside of class
   //----------------------------------------------------------------------------------------------------------------------
-  static MTypeId 		m_id;
+  static MTypeId 		s_id;
+  static MString		s_drawDbClassification;
+  static MString		s_drawRegistrantId;
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief the unique type name of our custom node. Mainly for mel purposes.
   /// must be public so maya can access
   //----------------------------------------------------------------------------------------------------------------------
   static const MString m_typeName;
-
-private :
-
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief the width of our locator cube this can be changed by the user
   //----------------------------------------------------------------------------------------------------------------------
@@ -89,6 +80,9 @@ private :
   /// @brief the depth of our locator cube this can be changed by the user
   //----------------------------------------------------------------------------------------------------------------------
   static MObject m_depth;
+
+private :
+
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief the volume of our locator cube this is calculated each time the attributes
   /// above are changed
@@ -96,6 +90,13 @@ private :
   static MObject m_volume;
 
 };
+
+
+
+
+
+
+
 #endif
 //----------------------------------------------------------------------------------------------------------------------
 

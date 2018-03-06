@@ -6,7 +6,7 @@
 MStatus initializePlugin( MObject obj )
 { 
 	MStatus   status;
-	MFnPlugin plugin( obj, "", "NCCA" , "Any" );
+  MFnPlugin plugin( obj, "", "NCCA" , "Any" );
 
   status = plugin.registerCommand( "customCreateSphere", CustomSphere::creator );
 	if ( !status )

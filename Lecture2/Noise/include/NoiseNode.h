@@ -1,5 +1,5 @@
-#ifndef NOISE_NODE_H__
-#define NOISE_NODE_H__
+#ifndef NOISE_NODE_H_
+#define NOISE_NODE_H_
 
 
 #include <maya/MTypeId.h>
@@ -10,7 +10,7 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MNodeMessage.h>
 #include <maya/MMessage.h>
-
+#include <memory>
 #include "Noise.h"
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief this class implements a perlin noise node with one output, it has 3 different noise
@@ -103,7 +103,7 @@ private :
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief the noise generator
   //----------------------------------------------------------------------------------------------------------------------
-  Noise *m_noise;
+  std::unique_ptr<Noise>m_noise;
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief the  noise types to use
   /// @note can't use enum classes from C++ 11 as need to be short or convertable

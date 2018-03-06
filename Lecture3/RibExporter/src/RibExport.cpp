@@ -1,3 +1,6 @@
+#include <iomanip>
+#include <string>
+
 #include "RibExport.h"
 #include <maya/MGlobal.h>
 #include <maya/MString.h>
@@ -29,8 +32,7 @@
 #include <boost/format.hpp>
 #include <maya/MFnMeshData.h>
 #include <maya/MObject.h>
-#include <iomanip>
-#include <string>
+
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief simple macro to check status and return if error
 /// originally written by Sola Aino
@@ -85,11 +87,11 @@ MStatus		RibExport::writer( const MFileObject& _file,
    MAnimControl anim;
    currframe.setValue(i);
    anim.setCurrentTime(currframe);
-    msg=boost::str(boost::format("Exporting frame %0d") % boost::io::group( std::setw(m_framePad), i) )  ;
-    MGlobal::displayInfo(msg.c_str());
+   // msg=boost::str(boost::format("Exporting frame %0d") % boost::io::group( std::setw(m_framePad), i) )  ;
+   // MGlobal::displayInfo(msg.c_str());
 
-    msg=boost::str(boost::format("%s.%0d.rib") %_file.expandedFullName() % boost::io::group( std::setw(m_framePad), i));
-    m_stream.open(msg.c_str());
+   // msg=boost::str(boost::format("%s.%0d.rib") %_file.expandedFullName() % boost::io::group( std::setw(m_framePad), i));
+    m_stream.open("/tmp/1.rib");
     if(!m_stream.is_open())
     {
       MGlobal::displayError("error opening file ");

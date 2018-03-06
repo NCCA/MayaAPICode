@@ -18,7 +18,7 @@ MStatus TimeLine::doIt( const MArgList& )
   currframe.setValue(0);
   anim.setMinTime(currframe);
   // lets set the max time
-  currframe.setValue(10000);
+  currframe.setValue(100);
   anim.setMaxTime(currframe);
 
   // now lets accesss this info
@@ -28,7 +28,7 @@ MStatus TimeLine::doIt( const MArgList& )
   sprintf(msg,"end frame =%f",anim.animationEndTime().value() );
   MGlobal::displayInfo(msg);
   int end=anim.animationEndTime().value();
-  for(int i=0; i<end; ++i)
+  for(float i=0.0f; i<end; i+=0.1)
   {
     currframe.setValue(i);
     anim.setCurrentTime(currframe);

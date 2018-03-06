@@ -1,7 +1,8 @@
 import sys
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
-
+import maya.cmds as cmds 
+import random
 kPluginCmdName = "helloPython"
 
 # Command
@@ -12,6 +13,9 @@ class scriptedCommand(OpenMayaMPx.MPxCommand):
     # Invoked when the command is run.
     def doIt(self,argList):
         print "Hello World!"
+        for i in range(0,100) :
+            cmds.sphere( name="sphere%d" %(i) ) 
+            cmds.move(random.uniform(-5,5),random.uniform(-5,5),random.uniform(-5,5))
 
 # Creator
 def cmdCreator():

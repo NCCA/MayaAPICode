@@ -39,8 +39,8 @@ MStatus CustomSphere::doIt( const MArgList& _args )
   m_count = _args.asInt( 0, &status );
 	if( !status )
 	{
-		MGlobal::displayError( "argument is not an integer" );
-		return MStatus::kFailure;
+    MGlobal::displayError( "argument is not an integer" );
+    return MStatus::kFailure;
 	}
 
 	// Check argument range
@@ -73,7 +73,7 @@ MStatus CustomSphere::redoIt()
     // fist I'm going to create a maya command as follows
     // sphere -name "sphere[n]" where n is the value of i
     std::string cmd;
-    float rad=randFloat(0.8,4.5);
+    float rad=randFloat(0.8f,4.5f);
     cmd=boost::str(boost::format("sphere -name \"sphere%d\" -r %f") %i %rad)  ;
     // now execute the command
     MStatus status = MGlobal::executeCommand( cmd.c_str() );

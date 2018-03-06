@@ -7,7 +7,6 @@
 # first lets remove Qt core and gui not going to need it
 ####################################################################################
 QT -= core gui
-CONFIG+=c++11
 ####################################################################################
 # This is the name of the plugin / final lib file
 ####################################################################################
@@ -26,12 +25,12 @@ OTHER_FILES+=RibExportScript.mel
 INCLUDEPATH+=include
 INCLUDEPATH+=/usr/include
 INCLUDEPATH+=/usr/local/include
-
-
-
+#LIBS+=-L/usr/local/lib -lboost_iostreams -lboost_filesystem -lboost_system
+#CONFIG+=c++11
+#macx:QMAKE_CXXFLAGS+=-mmacosx-version-min=10.12
 OBJECTS_DIR =obj
 ####################################################################################
-# these are defines required by Maya to re-define some C++
+# these are defines required by Maya   to re-define some C++
 # stuff, we will add some more later to tell what platform
 # we are on as well
 DEFINES+=REQUIRE_IOSTREAM \

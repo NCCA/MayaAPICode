@@ -102,7 +102,7 @@ macx:CONFIG -= app_bundle
 macx:INCLUDEPATH+=$$MAYALOCATION/devkit/include
 macx:LIBS+= -framework OpenGL
 macx:INCLUDEPATH+=/opt/X11/include
-macx:QMAKE_MAC_SDK = macosx10.11
+macx:QMAKE_MAC_SDK = macosx10.12
 
 ####################################################################################
 # under mac we need to build a bundle, to do this use

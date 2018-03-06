@@ -63,11 +63,6 @@ MObject NoiseNode::m_persistence;
 
 NoiseNode::~NoiseNode()
 {
-  // delete the noise node
-  if(m_noise !=0)
-  {
-    delete m_noise;
-  }
 
 }
 
@@ -299,7 +294,7 @@ MStatus NoiseNode::compute( const MPlug &_plug , MDataBlock &_data )
 NoiseNode::NoiseNode()
 {
   MGlobal::displayInfo("constructing new noise");
-  m_noise=new Noise();
+  m_noise.reset(new  Noise());
   m_seedValue=1;
 }
 

@@ -107,6 +107,8 @@ MStatus	SineNode::initialize()
   CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( status , "Unable to add \"output\" attribute to SineNode" );
 
   attributeAffects(m_time,  m_output);
+  attributeAffects(m_frequency,  m_output);
+  attributeAffects(m_amplitude,  m_output);
   attributeAffects(m_functionType,m_output);
 
 	return MStatus::kSuccess;

@@ -111,7 +111,7 @@ macx:INCLUDEPATH+=/opt/X11/include
 macx:INCLUDEPATH+=/usr/local/include
 
 macx:LIBS+= -framework OpenGL
-macx:QMAKE_MAC_SDK = macosx10.11
+macx:QMAKE_MAC_SDK = macosx10.12
 
 ####################################################################################
 # under mac we need to build a bundle, to do this use

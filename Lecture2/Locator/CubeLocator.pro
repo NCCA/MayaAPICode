@@ -7,6 +7,7 @@
 # first lets remove Qt core and gui not going to need it
 ####################################################################################
 QT       -= core gui
+CONFIG += c++11
 ####################################################################################
 # This is the name of the plugin / final lib file
 ####################################################################################
@@ -19,8 +20,10 @@ macx:TARGET=CubeLocatorNode.bundle
 # here we add the source files (and headers if required)
 ####################################################################################
 SOURCES+=src/CubeLocatorNode.cpp \
+         src/CubeLocatorNodeDrawOverride.cpp \
          src/Plugin.cpp
-HEADERS+=include/CubeLocatorNode.h
+HEADERS+=include/CubeLocatorNode.h \
+         include/CubeLocatorNodeDrawOverride.h
 OBJECTS_DIR = obj
 INCLUDEPATH+=include
 # these are defines required by Maya to re-define some C++
@@ -35,7 +38,8 @@ DEFINES+=REQUIRE_IOSTREAM \
 ####################################################################################
 MAYALIBS=-lOpenMaya \
         -lFoundation \
-        -lOpenMayaUI
+        -lOpenMayaUI \
+        -lOpenMayaRender
 ####################################################################################
 # these are all the libs usually included by mayald in case you need
 # them just add them to the list above and make sure you escape
@@ -97,12 +101,12 @@ linux:DEFINES+=linux
 ####################################################################################
 macx:DEFINES+=OSMac_
 macx:DEFINES+=__x86_64__
-macx:MAYALOCATION=/Applications/Autodesk/maya2016
+macx:MAYALOCATION=/Applications/Autodesk/maya2017
 macx:CONFIG -= app_bundle
 macx:INCLUDEPATH+=$$MAYALOCATION/devkit/include
 macx:INCLUDEPATH+=/opt/X11/include
 macx:LIBS+= -framework OpenGL
-macx:QMAKE_MAC_SDK = macosx10.11
+macx:QMAKE_MAC_SDK = macosx10.12
 
 ####################################################################################
 # under mac we need to build a bundle, to do this use

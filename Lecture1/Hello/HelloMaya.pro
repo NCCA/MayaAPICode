@@ -1,4 +1,4 @@
-####################################################################################
+	####################################################################################
 # This file is split into Three sections
 # The first configures Qt and the source files for all platforms
 # The second is the linux build

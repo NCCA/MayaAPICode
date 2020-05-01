@@ -20,8 +20,6 @@ Makefile
 *.lib
 
 # Visual Studio Crap
-*.vcproj
-*.vcxproj
 *.sln
 *.user
 *.filters

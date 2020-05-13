@@ -78,7 +78,6 @@ MStatus CustomSphere::redoIt()
     // and this is why I hate MString!
     radius.set(randFloat(0.8f,4.5f));
     index.set(i);
-    radius.set(rad);
     cmd.format(create, index, radius);
     // now execute the command
     MStatus status = MGlobal::executeCommand( cmd );

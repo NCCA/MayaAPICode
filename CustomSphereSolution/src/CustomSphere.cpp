@@ -1,5 +1,4 @@
 #include "CustomSphere.h"
-#include <boost/format.hpp>
 #include <maya/MSyntax.h>
 #include <maya/MArgDatabase.h>
 
@@ -124,33 +123,40 @@ return ((_max-_min)*((float)rand()/RAND_MAX))+_min;
 //----------------------------------------------------------------------------------------------------------------------
 MStatus CustomSphere::redoIt()
 {
+  static const MString create("sphere -name \"sphere^1s\" -r ^2s");
+  static const MString move("move ^1s ^2s ^3s \"sphere^4s\"");
   // loop for the number of arguments passed in and create some random spheres
+  MString cmd, index, radius, x, y, z;
   for( unsigned int i = 0; i < m_count; ++i )
 	{
     // fist I'm going to create a maya command as follows
     // sphere -name "sphere[n]" where n is the value of i
-    std::string cmd;
-    float rad=randFloat(m_minRadius,m_maxRadius);
-    cmd=boost::str(boost::format("sphere -name \"sphere%d\" -r %f") %i %rad)  ;
+    // and this is why I hate MString!
+    radius.set(randFloat(0.8f, 4.5f));
+    index.set(i);
+    cmd.format(create, index, radius);
     // now execute the command
-    MStatus status = MGlobal::executeCommand( cmd.c_str() );
-    // and check that is was succesfull
+    MStatus status = MGlobal::executeCommand(cmd);
+    // and check that is was successful
     CHECK_STATUS_AND_RETURN_IF_FAIL(status,"Unable to execute sphere command");
 
     // now move to a random position first grab some positions
-    float x=randFloat(-m_xExtent,m_xExtent);
-    float y=randFloat(-m_yExtent,m_yExtent);
-    float z=randFloat(-m_zExtent,m_zExtent);
+    x.set(randFloat(-20, 20));
+    y.set(randFloat(-20, 20));
+    z.set(randFloat(-20, 20));
     // build the command string
     // move x y z "sphere[n]"
-    cmd=boost::str(boost::format("move %f %f %f \"sphere%d\"") %x %y %z %i)  ;
+    cmd.format(move, x, y, z, index);
     // execute
-    status=MGlobal::executeCommand(cmd.c_str());
+    status = MGlobal::executeCommand(cmd);
     CHECK_STATUS_AND_RETURN_IF_FAIL(status,"unable to move object");
 
 	}
-  std::string mesg=boost::str(boost::format("%d Spheres created") %m_count)  ;
-  MGlobal::displayInfo( mesg.c_str() );
+  MString mesg, count;
+  count.set(m_count);
+  mesg.format("Created ^1s spheres", count);
+  MGlobal::displayInfo(mesg);
+  return MStatus::kSuccess;
 	return MStatus::kSuccess;
 }
 
@@ -159,18 +165,20 @@ MStatus CustomSphere::redoIt()
 MStatus CustomSphere::undoIt()
 {
   // here we undo what was done in the re-do method,
-  // this will be called when maya calles the undo method
-  for( unsigned int i = 0; i < m_count; ++i )
+  // this will be called when maya calls the undo method
+  MString cmd, index;
+
+  for (int i = 0; i < m_count; ++i)
   {
-    std::string cmd;
+    index.set(i);
     // delete the objects as created previously
-    cmd=boost::str(boost::format("delete  \"sphere%d\"") %i)  ;
-    MStatus status=MGlobal::executeCommand(cmd.c_str());
+    cmd.format("delete  \"sphere^1s\"", index);
+    MStatus status = MGlobal::executeCommand(cmd);
     // check that is was ok
-    CHECK_STATUS_AND_RETURN_IF_FAIL(status,"unable to delete objects in undo");
+    CHECK_STATUS_AND_RETURN_IF_FAIL(status, "unable to delete objects in undo");
 
   }
-	return MStatus::kSuccess;
+  return MStatus::kSuccess;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

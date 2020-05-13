@@ -75,8 +75,8 @@ MStatus CustomSphere::redoIt()
 	{
     // fist I'm going to create a maya command as follows
     // sphere -name "sphere[n]" where n is the value of i
-    float rad=randFloat(0.8f,4.5f);
     // and this is why I hate MString!
+    radius.set(randFloat(0.8f,4.5f));
     index.set(i);
     radius.set(rad);
     cmd.format(create, index, radius);

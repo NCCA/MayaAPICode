@@ -4,7 +4,6 @@
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MTime.h>
 
-#include <boost/format.hpp>
 
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief simple macro to check status and return if error

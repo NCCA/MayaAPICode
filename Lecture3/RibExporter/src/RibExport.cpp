@@ -29,9 +29,12 @@
 #include <maya/MFnLight.h>
 
 #include <maya/MItMeshPolygon.h>
-#include <boost/format.hpp>
 #include <maya/MFnMeshData.h>
 #include <maya/MObject.h>
+#include <memory>
+#include <string>
+#include <stdexcept>
+
 
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief simple macro to check status and return if error
@@ -45,7 +48,18 @@
     return MStatus::kFailure;						\
   }										\
 
-//----------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------
+
+// from https://stackoverflow.com/questions/2342162/stdstring-formatting-like-sprintf
+template<typename ... Args>
+std::string string_format( const std::string& format, Args ... args )
+{
+    size_t size = snprintf( nullptr, 0, format.c_str(), args ... ) + 1; // Extra space for '\0'
+    if( size <= 0 ){ return std::string(""); } 
+    std::unique_ptr<char[]> buf( new char[ size ] ); 
+    snprintf( buf.get(), size, format.c_str(), args ... );
+    return std::string( buf.get(), buf.get() + size - 1 ); // We don't want the '\0' inside
+}
 
 const char * g_HelpText="Usage : RibExport -f [name of rib file] -c camera to use\n";
 
@@ -87,11 +101,11 @@ MStatus		RibExport::writer( const MFileObject& _file,
    MAnimControl anim;
    currframe.setValue(i);
    anim.setCurrentTime(currframe);
-   // msg=boost::str(boost::format("Exporting frame %0d") % boost::io::group( std::setw(m_framePad), i) )  ;
-   // MGlobal::displayInfo(msg.c_str());
-
-   // msg=boost::str(boost::format("%s.%0d.rib") %_file.expandedFullName() % boost::io::group( std::setw(m_framePad), i));
-    m_stream.open("/tmp/1.rib");
+   msg=string_format("Exporting frame %0%d%d", m_framePad, i);
+   MGlobal::displayInfo(msg.c_str());
+  
+   msg=string_format("%s.%0%d%d.rib",_file.expandedFullName() ,m_framePad, i);
+    m_stream.open(msg.c_str());
     if(!m_stream.is_open())
     {
       MGlobal::displayError("error opening file ");
@@ -104,7 +118,7 @@ MStatus		RibExport::writer( const MFileObject& _file,
 
 
     // Display "Camera.exr" "f" "rgba"
-    msg=boost::str(boost::format("Display \"%s.%0d.exr\" \"file\" \"rgba\" \n" ) %m_imageName % boost::io::group( std::setw(m_framePad), i) );
+    msg=string_format("Display \"%s.%0%d%d.exr\" \"file\" \"rgba\" \n" ,m_imageName ,m_framePad, i );
     m_stream<<msg.c_str();
     // now the format
     m_stream<<"Format "<<m_imageWidth<<" "<<m_imageHeight<<" "<<m_pixelAspectRatio<<"\n";

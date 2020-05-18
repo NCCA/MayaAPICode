@@ -33,7 +33,6 @@
 #include <maya/MObject.h>
 #include <memory>
 #include <string>
-#include <stdexcept>
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -101,24 +100,25 @@ MStatus		RibExport::writer( const MFileObject& _file,
    MAnimControl anim;
    currframe.setValue(i);
    anim.setCurrentTime(currframe);
-   msg=string_format("Exporting frame %0%d%d", m_framePad, i);
+   msg=string_format("Exporting frame  %0*d", m_framePad, i);
    MGlobal::displayInfo(msg.c_str());
   
-   msg=string_format("%s.%0%d%d.rib",_file.expandedFullName() ,m_framePad, i);
-    m_stream.open(msg.c_str());
-    if(!m_stream.is_open())
-    {
-      MGlobal::displayError("error opening file ");
-      return MS::kFailure;
-    }
-    else
-    {
-      m_stream<<"# rib export Maya Script \n";
-    }
+  msg=string_format("%s.%0*d.rib",_file.expandedFullName().asChar(),m_framePad, i);
+  m_stream.open(msg.c_str());
+  if(!m_stream.is_open())
+  {
+    MGlobal::displayError("error opening file ");
+    MGlobal::displayError(msg.c_str());
+    return MS::kFailure;
+  }
+  else
+  {
+    m_stream<<"# rib export Maya Script \n";
+  }
 
 
     // Display "Camera.exr" "f" "rgba"
-    msg=string_format("Display \"%s.%0%d%d.exr\" \"file\" \"rgba\" \n" ,m_imageName ,m_framePad, i );
+    msg=string_format("Display \"%s.%0*d.exr\" \"file\" \"rgba\" \n" ,m_imageName.asChar() ,m_framePad, i );
     m_stream<<msg.c_str();
     // now the format
     m_stream<<"Format "<<m_imageWidth<<" "<<m_imageHeight<<" "<<m_pixelAspectRatio<<"\n";

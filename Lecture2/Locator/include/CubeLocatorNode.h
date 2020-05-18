@@ -1,8 +1,9 @@
 #ifndef CUBENODE_H_
 #define CUBENODE_H_
 
-#define LINUX
-
+#ifndef WIN32
+  #define LINUX
+#endif
 #include <maya/MTypeId.h>
 #include <maya/MStatus.h>
 #include <maya/M3dView.h>

@@ -12,6 +12,7 @@ MStatus HelloMaya::doIt( const MArgList& )
   MGlobal::displayInfo("Hello Maya in the maya command shell");
   MGlobal::displayWarning("This should be a warning");
   MGlobal::displayError("This should be an error");
+  MGlobal::displayError("second error");
 
   return MS::kSuccess;
 }

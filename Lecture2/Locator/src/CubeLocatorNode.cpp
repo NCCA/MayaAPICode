@@ -3,7 +3,6 @@
 #include <array>
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief simple macro to check status and return if error
-/// originally written by Sola Aina
 //----------------------------------------------------------------------------------------------------------------------
 #define CHECK_STATUS_AND_RETURN_MSTATUS_IF_FAIL( stat , message )				\
 	if( !status )										\
@@ -14,7 +13,6 @@
 	}											\
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief simple macro to check status and return if error
-/// originally written by Sola Aina
 //----------------------------------------------------------------------------------------------------------------------
 
 #define CHECK_STATUS_AND_RETURN_IF_FAIL( stat , message )					\

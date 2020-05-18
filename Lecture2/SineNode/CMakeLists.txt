@@ -1,15 +1,14 @@
 cmake_minimum_required(VERSION 3.1)
-project(HelloMaya)
+project(sineNode)
+set(CMAKE_CXX_STANDARD 17)
 # include the project setting file
 include($ENV{DEVKIT_LOCATION}/cmake/pluginEntry.cmake)
 
-# specify project name
-set(PROJECT_NAME HelloMaya)
 
 # set SOURCE_FILES
-set(SOURCE_FILES   HelloMaya.cpp)
-
+set(SOURCE_FILES   src/SineNode.cpp  src/Plugin.cpp include/SineNode.h )
+include_directories(include)
 # set linking libraries
-set(LIBRARIES OpenMaya     Foundation)
+set(LIBRARIES OpenMaya Foundation)
 # Build plugin
 build_plugin()

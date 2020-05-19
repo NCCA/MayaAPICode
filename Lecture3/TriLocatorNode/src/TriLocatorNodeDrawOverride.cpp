@@ -24,18 +24,18 @@ constexpr static std::array<float[3],3> triangle =
 // MRenderer::setGeometryDrawDirty()) for certain circumstances. Note that
 // the draw callback in MPxDrawOverride constructor is set to NULL in order
 // to achieve better performance.
-TriLocatorNodeDrawOverride::TriLocatorNodeDrawOverride(const MObject& obj): MHWRender::MPxDrawOverride(obj, NULL, false), fTriLocator(obj)
+TriLocatorNodeDrawOverride::TriLocatorNodeDrawOverride(const MObject& obj): MHWRender::MPxDrawOverride(obj, NULL, false), m_triLocator(obj)
 {
-	fModelEditorChangedCbId = MEventMessage::addEventCallback(
+	m_ModelEditorChangedCbId = MEventMessage::addEventCallback(
 		"modelEditorChanged", OnModelEditorChanged, this);
 }
 
 TriLocatorNodeDrawOverride::~TriLocatorNodeDrawOverride()
 {
-	if (fModelEditorChangedCbId != 0)
+	if (m_ModelEditorChangedCbId != 0)
 	{
-		MMessage::removeCallback(fModelEditorChangedCbId);
-		fModelEditorChangedCbId = 0;
+		MMessage::removeCallback(m_ModelEditorChangedCbId);
+		m_ModelEditorChangedCbId = 0;
 	}
 }
 
@@ -44,7 +44,7 @@ void TriLocatorNodeDrawOverride::OnModelEditorChanged(void *clientData)
 	// Mark the node as being dirty so that it can update on display mode switch,
 	// e.g. between wireframe and shaded.
 	TriLocatorNodeDrawOverride *ovr = static_cast<TriLocatorNodeDrawOverride*>(clientData);
-	if (ovr) MHWRender::MRenderer::setGeometryDrawDirty(ovr->fTriLocator);
+	if (ovr) MHWRender::MRenderer::setGeometryDrawDirty(ovr->m_triLocator);
 }
 
 MHWRender::DrawAPI TriLocatorNodeDrawOverride::supportedDrawAPIs() const
@@ -59,7 +59,7 @@ float TriLocatorNodeDrawOverride::getMultiplier(const MDagPath& objPath) const
 	MObject TriLocatorNode = objPath.node(&status);
 	if (status)
 	{
-		MPlug plug(TriLocatorNode, TriLocatorNode::size);
+		MPlug plug(TriLocatorNode, TriLocatorNode::m_size);
 		if (!plug.isNull())
 		{
 			MDistance sizeVal;
@@ -91,11 +91,11 @@ MBoundingBox TriLocatorNodeDrawOverride::boundingBox(
 	corner2 = corner2 * multiplier;
 
 	TriLocatorNodeDrawOverride *nonConstThis = (TriLocatorNodeDrawOverride *)this;
-	nonConstThis->mCurrentBoundingBox.clear();
-	nonConstThis->mCurrentBoundingBox.expand( corner1 );
-	nonConstThis->mCurrentBoundingBox.expand( corner2 );
+	nonConstThis->m_CurrentBoundingBox.clear();
+	nonConstThis->m_CurrentBoundingBox.expand( corner1 );
+	nonConstThis->m_CurrentBoundingBox.expand( corner2 );
 
-	return mCurrentBoundingBox;
+	return m_CurrentBoundingBox;
 }
 
 bool TriLocatorNodeDrawOverride::disableInternalBoundingBoxDraw() const
@@ -114,61 +114,60 @@ MUserData* TriLocatorNodeDrawOverride::prepareForDraw(const MDagPath& objPath,co
 
 	float fMultiplier = getMultiplier(objPath);
 
-	data->fLineList.clear();
+	data->m_lineArray.clear();
 	// line 1
-	data->fLineList.append(triangle[0][0] * fMultiplier, triangle[0][1] * fMultiplier, triangle[0][2] * fMultiplier);
-	data->fLineList.append(triangle[1][0] * fMultiplier, triangle[1][1] * fMultiplier, triangle[1][2] * fMultiplier);
+	data->m_lineArray.append(triangle[0][0] * fMultiplier, triangle[0][1] * fMultiplier, triangle[0][2] * fMultiplier);
+	data->m_lineArray.append(triangle[1][0] * fMultiplier, triangle[1][1] * fMultiplier, triangle[1][2] * fMultiplier);
 
 	// line 2
-	data->fLineList.append(triangle[1][0] * fMultiplier, triangle[1][1] * fMultiplier, triangle[1][2] * fMultiplier);
-	data->fLineList.append(triangle[2][0] * fMultiplier, triangle[2][1] * fMultiplier, triangle[2][2] * fMultiplier);
+	data->m_lineArray.append(triangle[1][0] * fMultiplier, triangle[1][1] * fMultiplier, triangle[1][2] * fMultiplier);
+	data->m_lineArray.append(triangle[2][0] * fMultiplier, triangle[2][1] * fMultiplier, triangle[2][2] * fMultiplier);
 
 	// line 3
-	data->fLineList.append(triangle[2][0] * fMultiplier, triangle[2][1] * fMultiplier, triangle[2][2] * fMultiplier);
-	data->fLineList.append(triangle[0][0] * fMultiplier, triangle[0][1] * fMultiplier, triangle[0][2] * fMultiplier);
+	data->m_lineArray.append(triangle[2][0] * fMultiplier, triangle[2][1] * fMultiplier, triangle[2][2] * fMultiplier);
+	data->m_lineArray.append(triangle[0][0] * fMultiplier, triangle[0][1] * fMultiplier, triangle[0][2] * fMultiplier);
 
-	data->fTriangleList.clear();
+	data->m_triangleArray.clear();
 
-	data->fTriangleList.append(triangle[0][0] * fMultiplier, triangle[0][1] * fMultiplier, triangle[0][2] * fMultiplier);
-	data->fTriangleList.append(triangle[1][0] * fMultiplier, triangle[1][1] * fMultiplier, triangle[1][2] * fMultiplier);
-	data->fTriangleList.append(triangle[2][0] * fMultiplier, triangle[2][1] * fMultiplier, triangle[2][2] * fMultiplier);
+	data->m_triangleArray.append(triangle[0][0] * fMultiplier, triangle[0][1] * fMultiplier, triangle[0][2] * fMultiplier);
+	data->m_triangleArray.append(triangle[1][0] * fMultiplier, triangle[1][1] * fMultiplier, triangle[1][2] * fMultiplier);
+	data->m_triangleArray.append(triangle[2][0] * fMultiplier, triangle[2][1] * fMultiplier, triangle[2][2] * fMultiplier);
 	// per vertex normals
 		
 	MVector normal(0.0f, 0.0f, 1.0f);
-	data->fNormalsList->clear();
-	data->fNormalsList->append(normal);
-	data->fNormalsList->append(normal);
-	data->fNormalsList->append(normal);
-	data->fColours->clear();
-	data->fColours->append(MColor(1.0f, 0.0f, 0.0f));
-	data->fColours->append(MColor(0.0f, 1.0f, 0.0f));
-	data->fColours->append(MColor(0.0f, 0.0f, 1.0f));
+	data->m_normalArray->clear();
+	data->m_normalArray->append(normal);
+	data->m_normalArray->append(normal);
+	data->m_normalArray->append(normal);
+	data->m_colourArray->clear();
+	data->m_colourArray->append(MColor(1.0f, 0.0f, 0.0f));
+	data->m_colourArray->append(MColor(0.0f, 1.0f, 0.0f));
+	data->m_colourArray->append(MColor(0.0f, 0.0f, 1.0f));
 
 
 	// compute data and cache it
-	data->fColor = MHWRender::MGeometryUtilities::wireframeColor(objPath);
+//	data->m_colour = MHWRender::MGeometryUtilities::wireframeColor(objPath);
 
 	return data;
 }
 
 void TriLocatorNodeDrawOverride::addUIDrawables(const MDagPath& objPath,MHWRender::MUIDrawManager& drawManager,const MHWRender::MFrameContext& frameContext,const MUserData* data)
 {
-	//TriLocatorNodeData* pLocatorData = (TriLocatorNodeData*)data;
 
-	auto pLocatorData = static_cast< const TriLocatorNodeData *>(data);
+	auto locatorData = static_cast< const TriLocatorNodeData *>(data);
 
 	drawManager.beginDrawable();
 
 	// Draw the tri print solid/wireframe
-	drawManager.setColor( pLocatorData->fColor );
+//	drawManager.setColor( locatorData->m_colour );
 	drawManager.setDepthPriority(5);
 
 	if (frameContext.getDisplayStyle() & MHWRender::MFrameContext::kGouraudShaded) 
 	{
-		drawManager.mesh(MHWRender::MUIDrawManager::kTriangles, pLocatorData->fTriangleList, pLocatorData->fNormalsList, pLocatorData->fColours);
+		drawManager.mesh(MHWRender::MUIDrawManager::kTriangles, locatorData->m_triangleArray, locatorData->m_normalArray, locatorData->m_colourArray);
 	}
 
-	drawManager.mesh(MHWRender::MUIDrawManager::kLineStrip, pLocatorData->fLineList, pLocatorData->fNormalsList, pLocatorData->fColours);
+	drawManager.mesh(MHWRender::MUIDrawManager::kLineStrip, locatorData->m_lineArray, locatorData->m_normalArray, locatorData->m_colourArray);
 
 
 	drawManager.endDrawable();

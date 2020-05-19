@@ -2,11 +2,11 @@
 #include <maya/MFnUnitAttribute.h>
 
 #include "TriLocatorNode.h"
- 
-MTypeId TriLocatorNode::id( 0x8001c );
-MObject TriLocatorNode::size;
-MString	TriLocatorNode::drawDbClassification("drawdb/geometry/TriLocator");
-MString	TriLocatorNode::drawRegistrantId("TriManipPlugin");
+
+MTypeId TriLocatorNode::s_id( 0x8001c );
+MObject TriLocatorNode::m_size;
+MString	TriLocatorNode::s_drawDbClassification("drawdb/geometry/TriLocator");
+MString	TriLocatorNode::s_drawRegistrantId("TriManipPlugin");
 
 
 
@@ -27,14 +27,14 @@ MBoundingBox TriLocatorNode::boundingBox() const
 	// Get the size
 	//
 	MObject thisNode = thisMObject();
-	MPlug plug(thisNode, size);
+	MPlug plug(thisNode, m_size);
 	MDistance sizeVal;
 	plug.getValue(sizeVal);
 
 	double multiplier = sizeVal.asCentimeters();
- 
-	MPoint corner1(-0.17, 0.0, -0.7);
-	MPoint corner2(0.17, 0.0, 0.3);
+	constexpr static float size = 0.5f;
+	MPoint corner1(-size,size, -0.0f);
+	MPoint corner2(size, -size, 0.0f);
 
 	corner1 = corner1 * multiplier;
 	corner2 = corner2 * multiplier;
@@ -54,19 +54,18 @@ MStatus TriLocatorNode::initialize()
 	MFnUnitAttribute unitFn;
 	MStatus			 stat;
 
-	size = unitFn.create("size", "sz", MFnUnitAttribute::kDistance);
-	unitFn.setDefault(10.0);
+	m_size = unitFn.create("size", "sz", MFnUnitAttribute::kDistance);
+	unitFn.setDefault(1.0);
 	unitFn.setStorable(true);
 	unitFn.setWritable(true);
 
-	stat = addAttribute(size);
-	if (!stat) {
+	stat = addAttribute(m_size);
+	if (!stat)
+	{
 		stat.perror("addAttribute");
 		return stat;
 	}
 	
-//	MPxManipContainer::addToManipConnectTable(id);
-
 	return MS::kSuccess;
 }
 

@@ -22,40 +22,28 @@ public:
 
 	MHWRender::DrawAPI supportedDrawAPIs() const override;
 
-	bool isBounded(
-		const MDagPath& objPath,
-		const MDagPath& cameraPath) const override;
+	bool isBounded(const MDagPath& objPath,const MDagPath& cameraPath) const override;
 
-	MBoundingBox boundingBox(
-		const MDagPath& objPath,
-		const MDagPath& cameraPath) const override;
+	MBoundingBox boundingBox(const MDagPath& objPath,const MDagPath& cameraPath) const override;
 
 	bool disableInternalBoundingBoxDraw() const override;
 
-	MUserData* prepareForDraw(
-		const MDagPath& objPath,
-		const MDagPath& cameraPath,
-		const MHWRender::MFrameContext& frameContext,
-		MUserData* oldData) override;
+	MUserData* prepareForDraw(		const MDagPath& objPath,const MDagPath& cameraPath,const MHWRender::MFrameContext& frameContext,MUserData* oldData) override;
 
 	bool hasUIDrawables() const override { return true; }
 
-	void addUIDrawables(
-		const MDagPath& objPath,
-		MHWRender::MUIDrawManager& drawManager,
-		const MHWRender::MFrameContext& frameContext,
-		const MUserData* data) override;
+	void addUIDrawables(const MDagPath& objPath,MHWRender::MUIDrawManager& drawManager,		const MHWRender::MFrameContext& frameContext,		const MUserData* data) override;
 
 protected:
-	MBoundingBox mCurrentBoundingBox;
+	MBoundingBox m_CurrentBoundingBox;
 
-	MCallbackId fModelEditorChangedCbId;
-	MObject fTriLocator;
+	MCallbackId m_ModelEditorChangedCbId;
+	MObject m_triLocator;
 
 private:
 	TriLocatorNodeDrawOverride(const MObject& obj);
-	float getMultiplier(const MDagPath& objPath) const;
 
+	float getMultiplier(const MDagPath& objPath) const;
 	static void OnModelEditorChanged(void *clientData);
 };
 

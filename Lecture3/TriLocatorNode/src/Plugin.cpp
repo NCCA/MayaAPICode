@@ -10,11 +10,11 @@ MStatus initializePlugin(MObject obj)
 	MFnPlugin plugin(obj, "NCCA", "1.0", "Any");
 
 	status = plugin.registerNode("TriLocatorNode", 
-								 TriLocatorNode::id, 
+								 TriLocatorNode::s_id, 
 								 &TriLocatorNode::creator, 
 								 &TriLocatorNode::initialize,
 								 MPxNode::kLocatorNode, 
-								 &TriLocatorNode::drawDbClassification
+								 &TriLocatorNode::s_drawDbClassification
 								 );
 	if (!status) 
   {
@@ -23,8 +23,8 @@ MStatus initializePlugin(MObject obj)
 	}
 
 	status = MHWRender::MDrawRegistry::registerDrawOverrideCreator(
-		TriLocatorNode::drawDbClassification,
-		TriLocatorNode::drawRegistrantId,
+		TriLocatorNode::s_drawDbClassification,
+		TriLocatorNode::s_drawRegistrantId,
 		TriLocatorNodeDrawOverride::Creator);
 	if (!status) 
   {
@@ -41,7 +41,7 @@ MStatus uninitializePlugin(MObject obj)
 	MStatus status;
 	MFnPlugin plugin(obj);
 
-	status = plugin.deregisterNode(TriLocatorNode::id);
+	status = plugin.deregisterNode(TriLocatorNode::s_id);
 	if (!status) 
   {
 		status.perror("deregisterNode");
@@ -49,8 +49,8 @@ MStatus uninitializePlugin(MObject obj)
 	}
 
 	status = MHWRender::MDrawRegistry::deregisterDrawOverrideCreator(
-		TriLocatorNode::drawDbClassification,
-		TriLocatorNode::drawRegistrantId);
+		TriLocatorNode::s_drawDbClassification,
+		TriLocatorNode::s_drawRegistrantId);
 	if (!status) 
   {
 		status.perror("deregisterNode");

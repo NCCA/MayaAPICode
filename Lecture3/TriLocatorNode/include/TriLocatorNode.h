@@ -12,10 +12,10 @@ class TriLocatorNode : public MPxLocatorNode
     MBoundingBox    boundingBox() const override; 
     static  void *          creator();
     static  MStatus         initialize();
-    static  MObject         size;         // The size of the foot
+    static  MObject         m_size;         // The size of the triangle
   public: 
-    static	MTypeId		id;
-    static  MString		drawDbClassification;
-    static  MString		drawRegistrantId;
+    static	MTypeId		s_id;
+    static  MString		s_drawDbClassification;
+    static  MString		s_drawRegistrantId;
 };
 

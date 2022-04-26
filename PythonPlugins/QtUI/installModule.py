@@ -4,37 +4,41 @@ import sys
 import platform
 from pathlib import Path
 
-def install_module_linux() :
-  print("installing for linux")
+maya_locations={
+  "Linux" : "/maya",
+  "Darwin" : "/Library/Preferences/Autodesk/maya",
+  "Windows" :  "\\Documents\\maya\\version"
+}
 
-def install_module_mac() :
+def install_module_linux(location) :
+  print(f"installing for linux {location}")
+
+def install_module_mac(location) :
   pass
 
-def install_module_windows() :
+def install_module_windows(location) :
   pass
 
 
 def check_maya_installed(op_sys) :
-  """
-  ensure maya is installed by checking the followind locations
-  linux ~/maya
-  mac /Users/username/Library/Preferences/Autodesk/maya
-  windows is drive:\\Users\\username\\Documents\\maya\\version
-  """
-  home_dir=Path.home()
-  raise 
+  
+  mloc=f"{Path.home()}{maya_locations.get(op_sys)}/"
+  if  not os.path.isdir(mloc) :
+    raise 
+  return mloc
+
 
 if __name__ == "__main__" :
   op_sys=platform.system()
   try :
-    check_maya_installed(op_sys)
+    m_loc=check_maya_installed(op_sys)
   except :
     print("Error can't find maya install")
     sys.exit(os.EX_CONFIG)
 
   if op_sys == "Linux" :
-    install_module_linux()
+    install_module_linux(m_loc)
   elif op_sys == "Darwin" :
-    install_module_mac()
+    install_module_mac(m_loc)
   elif op_sys == "Windows" :
-    install_module_windows()
+    install_module_windows(m_loc)

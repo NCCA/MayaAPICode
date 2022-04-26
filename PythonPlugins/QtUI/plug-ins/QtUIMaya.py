@@ -8,6 +8,7 @@ import maya.OpenMayaMPx as OpenMayaMPx
 import maya.OpenMayaUI as omui
 from PySide2 import QtCore, QtWidgets
 from PySide2.QtCore import QFile
+from PySide2.QtGui import QColor, QFont
 from PySide2.QtUiTools import QUiLoader
 from shiboken2 import wrapInstance
 
@@ -51,6 +52,83 @@ class SimpleDialog(QtWidgets.QWidget):
         self.ui = loader.load(file, parentWidget=self)
         file.close()
         self.ui.show()
+        self.ui.show_colour.clicked.connect(self.set_colour)
+        self.ui.confirm_button.clicked.connect(self.confirm)
+        self.ui.progress_window.clicked.connect(self.do_progress)
+        self.ui.prompt_dialog.clicked.connect(self.prompt_dialog)
+        self.ui.select_font.clicked.connect(self.select_font)
+
+    def set_colour(self):
+        cmds.colorEditor()
+        if cmds.colorEditor(query=True, result=True):
+            values = cmds.colorEditor(query=True, rgb=True)
+            print(values)
+            colour = QColor()
+            colour.setRedF(values[0])
+            colour.setGreenF(values[1])
+            colour.setBlueF(values[2])
+            self.ui.colour_label.setStyleSheet(
+                f"QLabel {{ background-color : rgb({colour.red()},{colour.green()},{colour.blue()} ) ; border :5px; }}"
+            )
+
+    def confirm(self):
+        result = cmds.confirmDialog(
+            title="Confirm",
+            message="Are you sure?",
+            button=["Yes", "No"],
+            defaultButton="Yes",
+            cancelButton="No",
+            dismissString="No",
+        )
+        self.ui.confirm_result.setText(result)
+
+    def do_progress(self):
+        amount = 0
+        cmds.progressWindow(
+            title="Doing Nothing",
+            progress=amount,
+            status="Sleeping: 0%",
+            isInterruptable=True,
+        )
+        while True:
+            # Check if the dialog has been cancelled
+            if cmds.progressWindow(query=True, isCancelled=True):
+                break
+
+            # Check if end condition has been reached
+            if cmds.progressWindow(query=True, progress=True) >= 100:
+                break
+            amount += 25
+            # can use f string in new maya
+            message = "Sleeping {} %".format(amount)
+            cmds.progressWindow(edit=True, progress=amount, status=message)
+            cmds.pause(seconds=1)
+        cmds.progressWindow(endProgress=1)
+
+    def prompt_dialog(self):
+        result = cmds.promptDialog(
+            title="Prompt dialog",
+            message="Enter some Text:",
+            button=["OK", "Cancel"],
+            defaultButton="OK",
+            cancelButton="Cancel",
+            dismissString="Cancel",
+        )
+
+        if result == "OK":
+            text = cmds.promptDialog(query=True, text=True)
+            self.ui.prompt_text.setText(text)
+
+    def select_font(self):
+        font = cmds.fontDialog()
+        # font elements are seperated by |
+        values = font.split("|")
+        # first value is the font name
+        print(values)
+        # sz is value[2] need to split
+        size = values[2].split(":")
+        font = QFont(values[0], int(size[1]))
+        self.ui.font_text.setFont(font)
 
 
 class QtUIMaya(OpenMaya.MPxCommand):

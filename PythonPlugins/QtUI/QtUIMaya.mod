@@ -1,4 +1,4 @@
-+ QtUiMaya 1.0 /Users/jmacey/teaching/Code/MayaAPICode/PythonPlugins/QtUI
++ QtUiMaya 1.0 /home/jmacey/MayaAPICode/PythonPlugins/QtUI
 MAYA_PLUG_IN_PATH +:= plug-ins
 
-QTUIPLUGIN_ROOT=/Users/jmacey/teaching/Code/MayaAPICode/PythonPlugins/QtUI
+QTUIPLUGIN_ROOT=/home/jmacey/MayaAPICode/PythonPlugins/QtUI

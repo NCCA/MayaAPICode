@@ -40,9 +40,7 @@ class SimpleDialog(QtWidgets.QWidget):
         # python 2
         else:
             super(SimpleDialog, self).__init__(parent)
-        # Set the GUI components and layout
-        self.setWindowTitle("SimpleDialog")
-        self.resize(200, 200)
+
         app_root = os.environ.get("QTUIPLUGIN_ROOT")
         # uic.loadUi(app_root + "ui/form.ui", self)  # Load the .ui file
         loader = QUiLoader()
@@ -51,6 +49,9 @@ class SimpleDialog(QtWidgets.QWidget):
         file.open(QFile.ReadOnly)
         self.ui = loader.load(file, parentWidget=self)
         file.close()
+        # This should make the window stay on top
+        self.ui.setWindowFlags(QtCore.Qt.Tool)
+
         self.ui.show()
         self.ui.show_colour.clicked.connect(self.set_colour)
         self.ui.confirm_button.clicked.connect(self.confirm)

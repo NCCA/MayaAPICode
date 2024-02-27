@@ -135,7 +135,7 @@ MStatus		RibExport::writer( const MFileObject& _file,
       while(!lightIt.isDone())
       {
       // get a handle to this node
-      MObject obj( lightIt.item());
+      MObject obj( lightIt.thisNode());
       exportLight(obj);
       // move on to next node
       lightIt.next();
@@ -150,7 +150,7 @@ MStatus		RibExport::writer( const MFileObject& _file,
       {
 
       // get a handle to this node
-      MObject obj = meshIt.item();
+      MObject obj = meshIt.thisNode();
 
         exportMesh(obj);
       // move on to next node
@@ -192,11 +192,12 @@ MStatus RibExport::exportCamera()
   {
 
   // get a handle to this node
-  MFnCamera cam ( it.item());
+  MFnCamera cam ( it.thisNode());
   // the active renderable camera is not stored in the render globals but in the
   // camera itself so we get the value here and output if set
   bool renderable;
-  cam.findPlug( "renderable" ).getValue( renderable );
+  bool camfound;
+  cam.findPlug( "renderable" ,camfound).getValue( renderable );
 
   if(renderable)
   {
@@ -318,7 +319,7 @@ MStatus RibExport::exportMesh(MObject _node)
     m_stream<<"Polygon ";
 
     m_stream<<"\"vertex point P\" [";
-    for(auto i=0; i<vc; ++i)
+    for(unsigned int i=0; i<vc; ++i)
     {
       uint index=itPoly.vertexIndex(i);
       m_stream<<vts[index][0]<<" "<<vts[index][1]<<" "<<vts[index][2]<<" ";
@@ -327,7 +328,7 @@ MStatus RibExport::exportMesh(MObject _node)
     if(m_exportNormals)
     {
       m_stream<<  "\"varying normal N\" [";
-      for(auto i=0; i<vc; ++i)
+      for(unsigned int i=0; i<vc; ++i)
       {
         uint index=itPoly.normalIndex(i);
         m_stream<<nmls[index][0]<<" "<<nmls[index][1]<<" "<<nmls[index][2]<<" ";
@@ -338,7 +339,7 @@ MStatus RibExport::exportMesh(MObject _node)
     {
       m_stream<<"\"varying float[2] st\" [";
     // have to get the uv index seperately
-      for(auto i=0; i<vc; ++i)
+      for(unsigned int i=0; i<vc; ++i)
       {
         int index;
         itPoly.getUVIndex(i,index);

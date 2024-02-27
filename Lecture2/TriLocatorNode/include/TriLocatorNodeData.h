@@ -1,5 +1,5 @@
 #ifndef TRILOCATORNODEDATA_H_
-#define TRILOCATORNODEDATE_H_
+#define TRILOCATORNODEDATA_H_
 
 #include <maya/MUserData.h>
 #include <maya/MColor.h>

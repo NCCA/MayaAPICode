@@ -14,3 +14,8 @@ find_opengl()
 
 # Build plugin
 build_plugin()
+
+# now copy the plugin to the local plugins folder set by PLUGINS_FOLDER
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${PLUGINS_FOLDER}/${OutputName}
+)

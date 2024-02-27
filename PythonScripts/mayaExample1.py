@@ -1,5 +1,4 @@
-from __future__ import print_function,division
-import maya.cmds as cmds
+import maya.cmds as cmds 
 
 # let's create a sphere
 cmds.sphere(radius=2, name='Sphere1')

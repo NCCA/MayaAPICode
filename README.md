@@ -2,10 +2,25 @@
 
 The lecture notes to accompany this code are here https://nccastaff.bournemouth.ac.uk/jmacey/MayaAPI/ 
 
-The code will work using the Qt projects for Linux and Mac and just require the Maya Devkit to be installed in an appropriate location. The dev kits are located here https://www.autodesk.com/developer-network/platform-technologies/maya and are now not part of the default maya install.
 
-For windows build follow the instructions here https://nccastaff.bournemouth.ac.uk/jmacey/MayaAPI/Windows/index.md.html.
 
-Each project has an MSbuild project which can be used.
+The dev kits are located here https://www.autodesk.com/developer-network/platform-technologies/maya and are now not part of the default maya install.
 
+
+Once the DevKit has been extracted note the location and add the following environment variable to your system
+    
+``` 
+MAYA_DEVKIT_LOCATION = [location where extracted]
+```
+
+This is used in the CMakeLists.txt to locate the devkit include files and libraries and CMake will be used to build all projects on Mac, Linux and Windows.
+
+For each of the projects you will need to create a build directory and run cmake to generate the build files. For example on Linux or Mac
+
+```
+mkdir build
+cd build
+cmake -G Ninja ..
+ninja
+```
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.20)
 project(HelloMaya)
 # include the project setting file
 include($ENV{DEVKIT_LOCATION}/cmake/pluginEntry.cmake)
@@ -10,12 +10,15 @@ set(PROJECT_NAME HelloMaya)
 set(SOURCE_FILES   HelloMaya.cpp)
 
 # set linking libraries
-set(LIBRARIES OpenMaya     Foundation)
+set(LIBRARIES OpenMaya Foundation)
 # Build plugin
 build_plugin()
 
-install(TARGETS ${PROJECT_NAME} DESTINATION ~/Library/Preferences/Autodesk/maya/2022/plug-ins)
 
-#install(DIRECTORY   ${CMAKE_SOURCE_DIR}/include/ngl/ DESTINATION include/ngl)
-#install(FILES   ${CMAKE_SOURCE_DIR}/gl3w/gl3w.h DESTINATION include/ngl)
+# now copy the plugin to the local plugins folder set by PLUGINS_FOLDER
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${PLUGINS_FOLDER}/${OutputName}
+)
+
+
 

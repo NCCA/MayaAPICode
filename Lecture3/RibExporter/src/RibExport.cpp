@@ -27,7 +27,6 @@
 #include <maya/MCommonRenderSettingsData.h>
 #include <maya/MFnCamera.h>
 #include <maya/MFnLight.h>
-
 #include <maya/MItMeshPolygon.h>
 #include <maya/MFnMeshData.h>
 #include <maya/MObject.h>
@@ -81,11 +80,11 @@ MStatus		RibExport::writer( const MFileObject& _file,
   m_exportNormals=true;
   m_exportUV=true;
   MGlobal::displayInfo(_optionsString);
+  // lets process the command line arguments
   parseCommandOptions(_optionsString);
 
   MObject node;
   MFnDagNode nodeFn;
-  // lets process the command line arguments
   MStatus status;
 
   getRenderGlobals();
@@ -118,7 +117,7 @@ MStatus		RibExport::writer( const MFileObject& _file,
 
 
     // Display "Camera.exr" "f" "rgba"
-    msg=string_format("Display \"%s.%0*d.exr\" \"file\" \"rgba\" \n" ,m_imageName.asChar() ,m_framePad, i );
+    msg=string_format("Display \"%s.%0*d.exr\" \"it\" \"rgba\" \n" ,m_imageName.asChar() ,m_framePad, i );
     m_stream<<msg.c_str();
     // now the format
     m_stream<<"Format "<<m_imageWidth<<" "<<m_imageHeight<<" "<<m_pixelAspectRatio<<"\n";
@@ -472,6 +471,6 @@ bool RibExport::haveWriteMethod	 () const
 //----------------------------------------------------------------------------------------------------------------------
 MString RibExport::defaultExtension () const
 {
-  return "";
+  return "rib";
 }
 

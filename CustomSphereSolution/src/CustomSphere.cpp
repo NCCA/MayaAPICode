@@ -168,7 +168,7 @@ MStatus CustomSphere::undoIt()
   // this will be called when maya calls the undo method
   MString cmd, index;
 
-  for (int i = 0; i < m_count; ++i)
+  for (unsigned int i = 0; i < m_count; ++i)
   {
     index.set(i);
     // delete the objects as created previously

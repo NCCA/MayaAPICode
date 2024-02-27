@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.20)
 
 
 project(DAGIt)
@@ -15,3 +15,8 @@ set(SOURCE_FILES   DAGIt.cpp)
 set(LIBRARIES OpenMaya     Foundation)
 # Build plugin
 build_plugin()
+# now copy the plugin to the local plugins folder set by PLUGINS_FOLDER
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${PLUGINS_FOLDER}/${OutputName}
+)
+

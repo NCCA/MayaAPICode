@@ -38,23 +38,7 @@ public:
   /// @param [in] 	_plug 	plug representing the attribute that needs to be recomputed
   /// @param [in] 	_block 	data block containing storage for the node's attributes
   //----------------------------------------------------------------------------------------------------------------------
-  virtual MStatus		compute(
-                             const MPlug &_plug ,
-                              MDataBlock &_block
-                            );
-  //----------------------------------------------------------------------------------------------------------------------
-  /// @brief this method is called when the display is updated
-  /// @param [in] 	_view 	3D view that is being drawn into
-  /// @param [in] 	_path 	to this locator in the DAG
-  /// @param [in] 	_style 	style to draw object in
-  /// @param [in] 	_status 	selection status of object
-  //----------------------------------------------------------------------------------------------------------------------
-  virtual void 		draw(
-                        M3dView & _view ,
-                        const MDagPath & _path ,
-                        M3dView::DisplayStyle _style,
-                        M3dView::DisplayStatus _status
-                        );
+  virtual MStatus		compute( const MPlug &_plug , MDataBlock &_block);
 
 
   MFloatPoint getDimensions() const ;

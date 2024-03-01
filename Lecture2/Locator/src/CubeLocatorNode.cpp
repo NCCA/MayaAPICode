@@ -155,7 +155,7 @@ MStatus CubeLocatorNode::compute( const MPlug &_plug , MDataBlock &_data )
   return MStatus::kUnknownParameter;
 }
 
-
+/*
 //----------------------------------------------------------------------------------------------------------------------
 void CubeLocatorNode::draw(
                             M3dView & _view,
@@ -218,6 +218,7 @@ void CubeLocatorNode::draw(
   _view.endGL();
   glPopAttrib();
 }
+ */
 
 //----------------------------------------------------------------------------------------------------------------------
 void* CubeLocatorNode::creator()

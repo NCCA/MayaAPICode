@@ -9,11 +9,11 @@
 #include <maya/MPointArray.h>
 #include <maya/MEventMessage.h>
 #include "CubeLocatorNode.h"
-
+#include <maya/MSharedPtr.h>
 class CubeLocatorNodeData : public MUserData
 {
 public:
-  CubeLocatorNodeData() : MUserData(false) {} // don't delete after draw
+  CubeLocatorNodeData()  {} // don't delete after draw
   virtual ~CubeLocatorNodeData() {}
 
   MColor fColor;

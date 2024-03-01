@@ -1,14 +1,14 @@
 #include "CubeLocatorNodeDrawOverride.h"
 
 CubeLocatorDrawOverride::CubeLocatorDrawOverride(const MObject& obj)
-  : MHWRender::MPxDrawOverride(obj, NULL)
+  : MHWRender::MPxDrawOverride(obj, nullptr)
 {
   m_ModelEditorChangedCbId = MEventMessage::addEventCallback(
     "modelEditorChanged", OnModelEditorChanged, this);
 
   MStatus status;
   MFnDependencyNode node(obj, &status);
-  m_locator = status ? dynamic_cast<CubeLocatorNode*>(node.userNode()) : NULL;
+  m_locator = status ? dynamic_cast<CubeLocatorNode*>(node.userNode()) : nullptr;
 
 }
 
@@ -67,55 +67,19 @@ void CubeLocatorDrawOverride::OnModelEditorChanged(void *clientData)
 //  }
 }
 
-MUserData* CubeLocatorDrawOverride::prepareForDraw(
-  const MDagPath& objPath,
-  const MDagPath& cameraPath,
-  const MHWRender::MFrameContext& frameContext,
-  MUserData* oldData)
+MUserData* CubeLocatorDrawOverride::prepareForDraw(const MDagPath& objPath,const MDagPath& cameraPath,const MHWRender::MFrameContext& frameContext,MUserData* oldData)
 {
   // Retrieve data cache (create if does not exist)
-  CubeLocatorNodeData* data = dynamic_cast<CubeLocatorNodeData*>(oldData);
+  auto data = dynamic_cast<CubeLocatorNodeData*>(oldData);
   if (!data)
   {
     data = new CubeLocatorNodeData();
   }
   MPoint dimension=getDimensions(objPath);
   char string[40];
-  sprintf(string,"Dim [%f %f %f]",dimension.x,dimension.y,dimension.z);
+  snprintf(string,40,"Dim [%f %f %f]",dimension.x,dimension.y,dimension.z);
   MGlobal::displayInfo(string);
 
-/*
-  float fMultiplier = getMultiplier(objPath);
-
-  data->fSoleLineList.clear();
-  for (int i = 0; i < soleCount; i++)
-  {
-    data->fSoleLineList.append(sole[i][0] * fMultiplier, sole[i][1] * fMultiplier, sole[i][2] * fMultiplier);
-  }
-
-  data->fHeelLineList.clear();
-  for (int i = 0; i < heelCount; i++)
-  {
-    data->fHeelLineList.append(heel[i][0] * fMultiplier, heel[i][1] * fMultiplier, heel[i][2] * fMultiplier);
-  }
-
-  data->fSoleTriangleList.clear();
-  for (int i = 1; i <= soleCount - 2; i++)
-  {
-    data->fSoleTriangleList.append(sole[0][0] * fMultiplier, sole[0][1] * fMultiplier, sole[0][2] * fMultiplier);
-    data->fSoleTriangleList.append(sole[i][0] * fMultiplier, sole[i][1] * fMultiplier, sole[i][2] * fMultiplier);
-    data->fSoleTriangleList.append(sole[i+1][0] * fMultiplier, sole[i+1][1] * fMultiplier, sole[i+1][2] * fMultiplier);
-  }
-
-  data->fHeelTriangleList.clear();
-  for (int i = 1; i <= heelCount - 2; i++)
-  {
-    data->fHeelTriangleList.append(heel[0][0] * fMultiplier, heel[0][1] * fMultiplier, heel[0][2] * fMultiplier);
-    data->fHeelTriangleList.append(heel[i][0] * fMultiplier, heel[i][1] * fMultiplier, heel[i][2] * fMultiplier);
-    data->fHeelTriangleList.append(heel[i+1][0] * fMultiplier, heel[i+1][1] * fMultiplier, heel[i+1][2] * fMultiplier);
-  }
-
-*/
   // compute data and cache it
   data->fColor = MHWRender::MGeometryUtilities::wireframeColor(objPath);
 
@@ -143,28 +107,8 @@ void CubeLocatorDrawOverride::addUIDrawables(
   drawManager.setColor( textColor );
   drawManager.setFontSize( MHWRender::MUIDrawManager::kSmallFontSize );
   drawManager.text( pos,  MString("Cube"), MHWRender::MUIDrawManager::kCenter );
-
   drawManager.endDrawable();
 
-
-/*
-  if (frameContext.getDisplayStyle() & MHWRender::MFrameContext::kGouraudShaded) {
-    drawManager.mesh(MHWRender::MUIDrawManager::kTriangles, pLocatorData->fSoleTriangleList);
-    drawManager.mesh(MHWRender::MUIDrawManager::kTriangles, pLocatorData->fHeelTriangleList);
-  }
-
-  drawManager.mesh(MHWRender::MUIDrawManager::kClosedLine, pLocatorData->fSoleLineList);
-  drawManager.mesh(MHWRender::MUIDrawManager::kClosedLine, pLocatorData->fHeelLineList);
-
-  // Draw a text "Foot"
-  MPoint pos( 0.0, 0.0, 0.0 ); // Position of the text
-  MColor textColor( 0.1f, 0.8f, 0.8f, 1.0f ); // Text color
-
-  drawManager.setColor( textColor );
-  drawManager.setFontSize( MHWRender::MUIDrawManager::kSmallFontSize );
-  drawManager.text( pos,  MString("FootprintLocator"), MHWRender::MUIDrawManager::kCenter );
-
-  drawManager.endDrawable();*/
 }
 
 

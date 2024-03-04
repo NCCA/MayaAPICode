@@ -13,14 +13,7 @@
     return MStatus::kFailure;						\
   }										\
 
-//----------------------------------------------------------------------------------------------------------------------
 
-
-
-CustomSphere::~CustomSphere()
-{
-  // as we have no dynamic allocation we don't need to do anything here
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 MSyntax CustomSphere::newSyntax()

@@ -24,7 +24,7 @@ cmake -G Ninja ..
 ninja
 ```
 
-If you use the toplevl CMakeLists.txt then all the projects will be built and the resultant plugins will be placed in the plugins folder for ease.
+If you use the top level CMakeLists.txt then all the projects will be built and the resultant plugins will be placed in the plugins folder for ease.
 
 You can set the MAYA_PLUG_IN_PATH in the Maya.env file to the plugins directory and then the plugins will be loaded when maya starts
 

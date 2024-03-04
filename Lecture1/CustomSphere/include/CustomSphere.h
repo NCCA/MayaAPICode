@@ -15,7 +15,7 @@ public:
   //----------------------------------------------------------------------------------------------------------------------
   // virtual dtor
   //----------------------------------------------------------------------------------------------------------------------
-  virtual		~CustomSphere();
+  virtual ~CustomSphere()=default;
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief the doIt command is called everytime the command is executed in the maya shell
   /// @param _args the command arguments passed when command is run
@@ -27,19 +27,19 @@ public:
   ///  class data.  The undoIt method should undo the actual work
   /// again using only the local class data.
   //----------------------------------------------------------------------------------------------------------------------
-  MStatus		doIt( const MArgList& _args );
+  MStatus		doIt( const MArgList& _args ) override;
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief does the actual commands work
   //----------------------------------------------------------------------------------------------------------------------
-  MStatus		redoIt();
+  MStatus		redoIt() override;
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief undo what was done by the class using local data only
   //----------------------------------------------------------------------------------------------------------------------
-  MStatus		undoIt();
+  MStatus		undoIt() override;
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief tell of the class is undoable (in this case true)
   //----------------------------------------------------------------------------------------------------------------------
-  bool		isUndoable() const;
+  bool		isUndoable()  const override;
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief our creator function called when the class is created
   /// the returns a new instance of this class

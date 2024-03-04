@@ -4,7 +4,6 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief simple macro to check status and return if error
-/// originally written by Sola Aino
 //----------------------------------------------------------------------------------------------------------------------
 #define CHECK_STATUS_AND_RETURN_IF_FAIL( stat , message )				\
   if( !status )									\

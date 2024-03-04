@@ -1,27 +1,17 @@
 #include "CustomSphere.h"
 #include <maya/MString.h>
-//----------------------------------------------------------------------------------------------------------------------
-/// @brief simple macro to check status and return if error
-/// originally written by Sola Aina
-//----------------------------------------------------------------------------------------------------------------------
-#define CHECK_STATUS_AND_RETURN_IF_FAIL( status , message )				\
+#include <maya/MRandom.h>
+#include <random>
+
+#define CHECK_STATUS_AND_RETURN_IF_FAIL( stat , message )				\
   if( !status )									\
   {										\
     MString errorString = status.errorString() +  MString( message);	\
     MGlobal::displayError( errorString );					\
     return MStatus::kFailure;						\
-  }										\
+  }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-
-
-CustomSphere::~CustomSphere()
-{
-  // as we have no dynamic allocation we don't need to do anything here
-}
-
-//----------------------------------------------------------------------------------------------------------------------
+std::mt19937 g_RandomEngine;
 
 MStatus CustomSphere::doIt( const MArgList& _args )
 {
@@ -52,31 +42,24 @@ MStatus CustomSphere::doIt( const MArgList& _args )
 	return redoIt();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-/// @brief a simple random number in range generator
-/// @param _min the min value
-/// @param _max the max value
-//----------------------------------------------------------------------------------------------------------------------
-float randFloat(float _min, float _max)
-{
-return ((_max-_min)*((float)rand()/RAND_MAX))+_min;
-}
 
 
 //----------------------------------------------------------------------------------------------------------------------
 MStatus CustomSphere::redoIt()
 {
-  static const MString create("sphere -name \"sphere^1s\" -r ^2s");
-  static const MString move("move ^1s ^2s ^3s \"sphere^4s\"");
+  const MString create("sphere -name \"sphere^1s\" -r ^2s");
+  const MString move("move ^1s ^2s ^3s \"sphere^4s\"");
 
   MString cmd,index,radius,x,y,z;
+  std::uniform_real_distribution<float>radiusDist(0.8f,4.5f);
+  std::uniform_real_distribution<float>positionDist(-20,20);
   // loop for the number of arguments passed in and create some random spheres
   for(  int i = 0; i < m_count; ++i )
 	{
     // fist I'm going to create a maya command as follows
     // sphere -name "sphere[n]" where n is the value of i
     // and this is why I hate MString!
-    radius.set(randFloat(0.8f,4.5f));
+    radius.set(radiusDist(g_RandomEngine));
     index.set(i);
     cmd.format(create, index, radius);
     // now execute the command
@@ -85,9 +68,9 @@ MStatus CustomSphere::redoIt()
     CHECK_STATUS_AND_RETURN_IF_FAIL(status,"Unable to execute sphere command");
 
     // now move to a random position first grab some positions
-    x.set(randFloat(-20,20));
-    y.set(randFloat(-20,20));
-    z.set(randFloat(-20,20));
+    x.set(positionDist(g_RandomEngine));
+    y.set(positionDist(g_RandomEngine));
+    z.set(positionDist(g_RandomEngine));
     // build the command string
     // move x y z "sphere[n]"
     cmd.format(move, x, y, z, index);
@@ -96,10 +79,10 @@ MStatus CustomSphere::redoIt()
     CHECK_STATUS_AND_RETURN_IF_FAIL(status,"unable to move object");
 
 	}
-  MString mesg,count;
+  MString message,count;
   count.set(m_count);
-  mesg.format("Created ^1s spheres", count) ;
-  MGlobal::displayInfo( mesg );
+  message.format("Created ^1s spheres", count) ;
+  MGlobal::displayInfo( message );
 	return MStatus::kSuccess;
 }
 

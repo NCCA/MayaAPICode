@@ -4,7 +4,7 @@
 // This is a macro to create a simple command
 // the compiler expands it to a bunch of code
 
-DeclareSimpleCommand( HelloMaya , "NCCA", "Maya 2020");
+DeclareSimpleCommand( HelloMaya , "NCCA", "Maya 2024");
 
 MStatus HelloMaya::doIt( const MArgList& )
 {

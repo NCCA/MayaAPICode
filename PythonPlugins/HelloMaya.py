@@ -1,14 +1,14 @@
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
 
-
+'''
 def maya_useNewAPI():
     """
     Can either use this function (which works on earlier versions)
     or we can set maya_useNewAPI = True
     """
     pass
-
+'''
 
 maya_useNewAPI = True
 

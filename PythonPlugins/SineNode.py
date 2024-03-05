@@ -79,16 +79,30 @@ class SineNode(om.MPxNode):
         om.MPxNode.attributeAffects(SineNode.function_type, SineNode.output)
         return True
 
-    # COMPUTE METHOD'S DEFINITION:
     def compute(self, plug, data):
+        ##
+		## Description
+		##
+		##    When input attributes are dirty this method will be called to
+		##    recompute the output attributes.
+		##
+		## Arguments
+		##
+		##    plug      - the attribute that triggered the compute
+		##    datablock - the nodes data
+		##
+        # ensure we have the correct  input data
         assert isinstance(data.context(), om.MDGContext)
         assert data.setContext(data.context()) == data
+        # we only need to compute if the plug is the output node changing
         if plug == SineNode.output:
+            # get the input data and convert to python types
             time_data = data.inputValue(SineNode.time)
             time = time_data.asTime()
             amplitude = data.inputValue(SineNode.amplitude).asDouble()
             frequency = data.inputValue(SineNode.frequency).asDouble()
             function_type = data.inputValue(SineNode.function_type).asShort()
+            # compute the result
             if function_type == 0:
                 result = amplitude * math.sin(math.radians(
                     frequency * math.pi * time.asUnits(om.MTime.kSeconds)
@@ -109,7 +123,22 @@ class SineNode(om.MPxNode):
             data.setClean(plug)
             return True
         return False
+    
+    def postConstructor(self):
+        ##
+        ## Description
+        ##
+        ##    When instances of this node are created internally, the MObject associated
+        ##    with the instance is not created until after the constructor of this class
+        ##    is called. This means that no member functions of Node can
+        ##    be called in the constructor.
+        ##    The postConstructor solves this problem. Maya will call this function
+        ##    after the internal object has been created.
+        ##    As a general rule do all of your initialization in the postConstructor.
+        ##    Not used here but for info
+        print("postConstructor called")
 
+    
 
 def initializePlugin(obj):
     plugin = om.MFnPlugin(obj)

@@ -1,6 +1,7 @@
 import maya.api.OpenMaya as om
 import sys
 import math
+import random
 
 # Set this flag to show we are using api 2.0
 maya_useNewAPI = True
@@ -82,10 +83,23 @@ class InputNode(om.MPxNode):
             # get the input data and convert to python types
             time_data = data.inputValue(InputNode.time)
             time = time_data.asTime()
+            array_data_handle = data.outputArrayValue(InputNode.output)
+            data_size = data.inputValue(InputNode.data_size).asInt()
 
-            output_data = data.outputValue(InputNode.output)
-            # output_data.setDouble(result)
+            data_block = self.forceCache()
+            array_builder = om.MArrayDataBuilder(data_block, self.output, data_size)
+
+            output_array_builder = array_data_handle.builder()
+            om.MGlobal.displayInfo("Data size: " + str(data_size))
+            for i in range(0,data_size) :
+                #output_handle = output_array_builder.addLast()
+                #output_handle.setFloat(random.uniform(0,10))
+                child = array_builder.addLast()
+                child.setFloat(random.uniform(0,10))
+            array_data_handle.set(array_builder)
+            array_data_handle.setAllClean()
             data.setClean(plug)
+            
             return True
         return False
     

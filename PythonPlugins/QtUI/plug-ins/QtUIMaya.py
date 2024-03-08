@@ -69,7 +69,9 @@ class SimpleDialog(QtWidgets.QWidget):
             colour.setGreenF(values[1])
             colour.setBlueF(values[2])
             self.ui.colour_label.setStyleSheet(
-                "QLabel {{ background-color : rgb({},{},{} ) ; border :5px; }}".format(colour.red(),colour.green(),colour.blue())
+                "QLabel {{ background-color : rgb({},{},{} ) ; border :5px; }}".format(
+                    colour.red(), colour.green(), colour.blue()
+                )
             )
 
     def confirm(self):

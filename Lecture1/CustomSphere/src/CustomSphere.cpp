@@ -1,6 +1,5 @@
 #include "CustomSphere.h"
 #include <maya/MString.h>
-#include <maya/MRandom.h>
 #include <random>
 
 #define CHECK_STATUS_AND_RETURN_IF_FAIL( stat , message )				\

@@ -1,4 +1,4 @@
-import maya.api.OpenMaya as om
+import maya.api.OpenMaya as OpenMaya
 import maya.cmds as cmds
 import random
 
@@ -14,7 +14,7 @@ def maya_useNewAPI():
 maya_useNewAPI = True
 
 
-class CustomSphere(om.MPxCommand):
+class CustomSphere(OpenMaya.MPxCommand):
 
     CMD_NAME = "CustomSpherePy"
 
@@ -26,17 +26,16 @@ class CustomSphere(om.MPxCommand):
         Called when the command is executed in script
         args is an MArgList object
         """
-        print(len(args))
         if len(args) == 0:
-            om.MGlobal.displayError("No radius specified")
+            OpenMaya.MGlobal.displayError("No radius specified")
             return False
-        try :
+        try:
             self.count = args.asInt(0)
-        except :
-            om.MGlobal.displayError("Invalid radius")
+        except:
+            OpenMaya.MGlobal.displayError("Invalid radius")
             return False
         if self.count < 0:
-            om.MGlobal.displayError("argument must be greater than zero")
+            OpenMaya.MGlobal.displayError("argument must be greater than zero")
             return False
         return self.redoIt()
 
@@ -44,11 +43,11 @@ class CustomSphere(om.MPxCommand):
         """
         Called when the command is executed in script
         """
-        for i in range(0,self.count) :
+        for i in range(0, self.count):
             x = random.uniform(-10, 10)
             y = random.uniform(-10, 10)
             z = random.uniform(-10, 10)
-            radius = random.uniform(0.8,4.5)
+            radius = random.uniform(0.8, 4.5)
             cmds.sphere(r=radius, n=f"sphere{i}")
             cmds.move(x, y, z)
         return True
@@ -57,13 +56,11 @@ class CustomSphere(om.MPxCommand):
         """
         Called when the command is undone
         """
-        for i in range(0,self.count) :
+        for i in range(0, self.count):
             cmds.delete(f"sphere{i}")
-
 
     def isUndoable(self):
         return True
-
 
     @classmethod
     def creator(cls):
@@ -80,12 +77,12 @@ def initializePlugin(plugin):
     vendor = "NCCA"
     version = "1.0.0"
 
-    plugin_fn = om.MFnPlugin(plugin, vendor, version)
+    plugin_fn = OpenMaya.MFnPlugin(plugin, vendor, version)
 
     try:
         plugin_fn.registerCommand(CustomSphere.CMD_NAME, CustomSphere.creator)
     except:
-        om.MGlobal.displayError(
+        OpenMaya.MGlobal.displayError(
             "Failed to register command: {0}".format(CustomSphere.CMD_NAME)
         )
 
@@ -94,11 +91,11 @@ def uninitializePlugin(plugin):
     """
     Exit point for a plugin
     """
-    plugin_fn = om.MFnPlugin(plugin)
+    plugin_fn = OpenMaya.MFnPlugin(plugin)
     try:
         plugin_fn.deregisterCommand(CustomSphere.CMD_NAME)
     except:
-        om.MGlobal.displayError(
+        OpenMaya.MGlobal.displayError(
             "Failed to deregister command: {0}".format(CustomSphere.CMD_NAME)
         )
 
@@ -113,9 +110,11 @@ if __name__ == "__main__":
     plugin_name = "CustomSphere.py"
 
     cmds.evalDeferred(
-        'if cmds.pluginInfo("f{plugin_name}", q=True, loaded=True): cmds.unloadPlugin(f"{plugin_name}")')
+        'if cmds.pluginInfo("f{plugin_name}", q=True, loaded=True): cmds.unloadPlugin(f"{plugin_name}")'
+    )
 
     cmds.evalDeferred(
-        'if not cmds.pluginInfo(f"{plugin_name}", q=True, loaded=True): cmds.loadPlugin(f"{plugin_name}")')
+        'if not cmds.pluginInfo(f"{plugin_name}", q=True, loaded=True): cmds.loadPlugin(f"{plugin_name}")'
+    )
 
     cmds.CustromSpherePy(100)

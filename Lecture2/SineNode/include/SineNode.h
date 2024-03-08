@@ -30,10 +30,7 @@ public:
   /// @param [in] 	_plug 	plug representing the attribute that needs to be recomputed
   /// @param [in] 	_block 	data block containing storage for the node's attributes
   //----------------------------------------------------------------------------------------------------------------------
-  virtual MStatus		compute(
-                             const MPlug &_plug ,
-                              MDataBlock &_block
-                            );
+  virtual MStatus		compute(const MPlug &_plug , MDataBlock &_block );
 
   //----------------------------------------------------------------------------------------------------------------------
   /// @brief the id of this plugin must be public so we can set outside of class

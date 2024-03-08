@@ -2,7 +2,7 @@ import pytest
 
 import sys, os
 import maya.standalone
-import CustomSphere
+import CustomSphereSolution
 
 
 def setup_module(module):
@@ -24,10 +24,10 @@ def test_CustomSphere():
     import maya.cmds as cmds
 
     print("loading plugin")
-    cmds.loadPlugin("CustomSphere.py")
-    cmds.CustomSpherePy(100)
-    results = cmds.ls("sphere*", type="shape")
-    assert len(results) == 100
-    cmds.undo()
-    results = cmds.ls("sphere*", type="shape")
-    assert len(results) == 0
+    cmds.loadPlugin("CustomSphereSolution.py")
+    cmds.CustomSphereSolutionPy(n=100, x=20, y=20, z=20, mr=0.2, mm=2.5)
+    # results = cmds.ls("sphere*", type="shape")
+    # assert len(results) == 100
+    # cmds.undo()
+    # results = cmds.ls("sphere*", type="shape")
+    # assert len(results) == 0

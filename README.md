@@ -10,7 +10,11 @@ The dev kits are located here https://www.autodesk.com/developer-network/platfor
 Once the DevKit has been extracted note the location and add the following environment variable to your system
     
 ``` 
-MAYA_DEVKIT_LOCATION = [location where extracted]
+DEVKIT_LOCATION = [location where extracted]
+
+// Currently in the labs you need to do the following
+
+export DEVKIT_LOCATION=/public/devel/24-25/maya2023_dev/
 ```
 
 This is used in the CMakeLists.txt to locate the devkit include files and libraries and CMake will be used to build all projects on Mac, Linux and Windows.

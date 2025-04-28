@@ -7,7 +7,7 @@ for z in range(-5, 5):
         index += 1
 
 cmds.createNode("InputNodePy", name="ipNode1")
-cmds.setAttr("ipNode1.data_size", 100)
+cmds.setAttr("ipNode1.dataSize", 100)
 cmds.connectAttr("time1.outTime", "ipNode1.time")
 
 for i in range(0, 100):

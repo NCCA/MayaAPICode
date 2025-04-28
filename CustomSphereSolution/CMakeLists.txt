@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(CustomSphereSolution)
 # include the project setting file
-include($ENV{DEVKIT_LOCATION}/cmake/pluginEntry.cmake)
+include(${DEVKIT_LOCATION}/cmake/pluginEntry.cmake)
 
 
 # set SOURCE_FILES
